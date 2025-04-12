@@ -42,9 +42,10 @@ namespace _GAME.Scripts.FSM.Brick
         {
             if(other.CompareTag("Player"))
             {
-                if (this.Color == BrickColor.Pink)
+                var characterColor = other.GetComponent<Character>().characterColor;
+                if (this.Color == characterColor)
                 {
-                    other.GetComponent<PlayerController>().pickUpBrick(this.Color);
+                    other.GetComponent<PlayerController>().pickUpBrick(this);
                 }
             }
         }

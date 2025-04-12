@@ -62,7 +62,7 @@ namespace _GAME.Scripts.FSM
 
         protected abstract void InitializeStates();
 
-        public virtual void pickUpBrick(BrickColor color)
+        public virtual void pickUpBrick(Brick.Brick brick)
         {
 
         }
