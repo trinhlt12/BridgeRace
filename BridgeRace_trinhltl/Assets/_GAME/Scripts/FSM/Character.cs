@@ -7,13 +7,12 @@ namespace _GAME.Scripts.FSM
     public abstract class Character : MonoBehaviour
     {
         [SerializeField] protected StateMachine _stateMachine;
-        public    BrickColor        characterColor;
+        public                     BrickColor   characterColor;
 
-        public        Rigidbody    rb;
+        public Rigidbody rb;
 
-        public  Animator animator;
+        public                   Animator animator;
         [SerializeField] private Renderer _renderer;
-
 
         //brick count
 
@@ -24,7 +23,7 @@ namespace _GAME.Scripts.FSM
                 this._stateMachine = GetComponent<StateMachine>();
             }
 
-            this.rb             = this.gameObject.GetComponent<Rigidbody>();
+            this.rb = this.gameObject.GetComponent<Rigidbody>();
 
             if (animator == null)
             {
@@ -64,7 +63,6 @@ namespace _GAME.Scripts.FSM
 
         public virtual void pickUpBrick(Brick.Brick brick)
         {
-
         }
     }
 }
