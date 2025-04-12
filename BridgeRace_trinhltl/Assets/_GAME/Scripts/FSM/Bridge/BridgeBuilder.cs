@@ -16,18 +16,20 @@ namespace _GAME.Scripts.FSM.Bridge
         [Header("Step Settings")]
         [SerializeField] private GameObject bridgeStepPrefab;
         [SerializeField] private Material defaultMaterial;
+        [SerializeField] private float maxDistanceBetweenSteps = 0.2f;
         private float stepLength;
         private float stepHeight;
 
         [Header("Bridge Properties")]
         [SerializeField] private float bridgeWidth = 2f;
+        [SerializeField] private Transform bridgeTransform;
 
         private List<GameObject> bridgeSteps = new List<GameObject>();
 
         private void Awake()
         {
-            stepLength = bridgeStepPrefab.GetComponentInChildren<Renderer>().bounds.size.z;
-            stepHeight = bridgeStepPrefab.GetComponentInChildren<Renderer>().bounds.size.y;
+            stepLength = bridgeStepPrefab.GetComponent<BoxCollider>().size.z;
+            stepHeight = bridgeStepPrefab.GetComponent<BoxCollider>().size.y;
         }
 
         private void Start()
@@ -47,7 +49,7 @@ namespace _GAME.Scripts.FSM.Bridge
 
             var spline = this.splineContainer.Splines[splineIndex];
             var splineLength = spline.GetLength();
-            var numberOfSteps = Mathf.CeilToInt(splineLength / stepLength);
+            var numberOfSteps = Mathf.CeilToInt(splineLength / this.maxDistanceBetweenSteps) + 1;
 
             for (var i = 0; i < numberOfSteps; i++)
             {
@@ -64,7 +66,8 @@ namespace _GAME.Scripts.FSM.Bridge
         private GameObject CreateBridgeStep(float3 position, float3 tangent, float3 up)
         {
             var step = Instantiate(this.bridgeStepPrefab, transform);
-            step.transform.position = position;
+            step.transform.SetParent(bridgeTransform);
+            step.transform.localPosition = position;
 
             var right = Vector3.Cross(math.normalize(tangent), math.normalize(up));
             step.transform.rotation = Quaternion.LookRotation(tangent, up);

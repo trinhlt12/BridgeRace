@@ -274,7 +274,9 @@ MonoBehaviour:
   bridgeStepPrefab: {fileID: 7354596081952332329, guid: 9621133bdf8c04544934545b08e9f5f7,
     type: 3}
   defaultMaterial: {fileID: 2100000, guid: d11990d7c3ba77a46bb57207b174468d, type: 2}
-  bridgeWidth: 2
+  maxDistanceBetweenSteps: 0.35
+  bridgeWidth: 0.75
+  bridgeTransform: {fileID: 663961065}
 --- !u!4 &287094049
 Transform:
   m_ObjectHideFlags: 0
