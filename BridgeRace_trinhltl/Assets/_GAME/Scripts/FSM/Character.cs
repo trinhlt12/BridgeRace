@@ -5,8 +5,8 @@ namespace _GAME.Scripts.FSM
 
     public abstract class Character : MonoBehaviour
     {
-        protected StateMachine _stateMachine;
-        public    Rigidbody    rb { get; private set; }
+        [SerializeField] protected StateMachine _stateMachine;
+        public        Rigidbody    rb;
 
         public Animator animator { get; private set; }
 
@@ -15,16 +15,20 @@ namespace _GAME.Scripts.FSM
 
         protected virtual void Awake()
         {
+            if (this._stateMachine == null)
+            {
+                this._stateMachine = GetComponent<StateMachine>();
+            }
+
+            rb       = this.gameObject.GetComponent<Rigidbody>();
+            animator = GetComponent<Animator>();
+
+            this.InitializeStates();
+
             this.OnInit();
         }
 
-        protected virtual void OnInit()
-        {
-            this._stateMachine = GetComponent<StateMachine>();
-
-            rb       = GetComponent<Rigidbody>();
-            animator = GetComponent<Animator>();
-        }
+        protected abstract void OnInit();
 
         protected abstract void InitializeStates();
     }

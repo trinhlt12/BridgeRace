@@ -3,7 +3,7 @@ namespace _GAME.Scripts.FSM
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class StateMachine
+    public class StateMachine : MonoBehaviour
     {
         private IState                          _currentState;
         private IState                          _previousState;
@@ -21,6 +21,12 @@ namespace _GAME.Scripts.FSM
 
         public void AddState<T>(T state) where T : IState
         {
+            if (state == null)
+            {
+                Debug.LogError($"Attempted to add null state of type {typeof(T).Name}");
+                return;
+            }
+
             this._states[typeof(T)] = state;
         }
 
@@ -31,6 +37,12 @@ namespace _GAME.Scripts.FSM
 
         public void ChangeState<T>() where T : IState
         {
+            if (!_states.TryGetValue(typeof(T), out IState newState))
+            {
+                Debug.LogError($"State {typeof(T).Name} not found in state machine");
+                return;
+            }
+
             if (this._currentState != null)
             {
                 this._previousState = this._currentState;

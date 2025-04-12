@@ -1,14 +1,17 @@
 namespace _GAME.Scripts.FSM
 {
+    using _GAME.Scripts.Player;
+
     public class BaseState : IState
     {
-        protected StateMachine _stateMachine;
-        protected Character    _character;
+        protected StateMachine     _stateMachine;
+        protected Character        _character;
+        protected PlayerController _player;
 
         public BaseState(StateMachine stateMachine, Character character)
         {
             _stateMachine = stateMachine;
-            _character    = character;
+            this._player = character as PlayerController;
         }
 
         public virtual void OnEnter()
@@ -30,9 +33,9 @@ namespace _GAME.Scripts.FSM
 
         private void PlayAnimation(IState state)
         {
-            if (_character.animator == null) return;
+            if (this._player.animator == null) return;
 
-            _character.animator.Play(state.GetType().Name);
+            this._player.animator.Play(state.GetType().Name);
         }
     }
 }
