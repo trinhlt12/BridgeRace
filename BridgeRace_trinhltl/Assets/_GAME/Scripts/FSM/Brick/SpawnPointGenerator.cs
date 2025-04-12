@@ -1,27 +1,31 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.AI;
+using Random = UnityEngine.Random;
+
 namespace _GAME.Scripts.FSM.Brick
 {
-    using System;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.AI;
-    using Random = UnityEngine.Random;
-
     public class SpawnPointGenerator : MonoBehaviour
     {
-        [SerializeField] private int        numberOfSpawnPoints      = 100;
-        [SerializeField] private float      minDistanceBetweenPoints = 1f;
+        [SerializeField] private int numberOfSpawnPoints = 100;
+        [SerializeField] private float minDistanceBetweenPoints = 1.5f;
         [SerializeField] private GameObject spawnArea;
-        public Bounds     spawnPointBounds;
-        [SerializeField] private bool       visualizePoints = true;
+        public Bounds spawnPointBounds;
+        [SerializeField] private bool visualizePoints = true;
+        [SerializeField] private float spacingX = 1.5f;
+        [SerializeField] private float spacingZ = 1.5f;
 
         private List<Vector3> spawnPoints = new List<Vector3>();
+        private List<Vector3> availableSpawnPoints = new List<Vector3>();
 
         private void Awake()
         {
             if (this.spawnArea.GetComponentInChildren<Renderer>())
             {
                 this.spawnPointBounds = this.spawnArea.GetComponentInChildren<Renderer>().bounds;
-            }else if (this.spawnArea.GetComponentInChildren<Collider>())
+            }
+            else if (this.spawnArea.GetComponentInChildren<Collider>())
             {
                 spawnPointBounds = this.spawnArea.GetComponentInChildren<Collider>().bounds;
             }
@@ -29,36 +33,16 @@ namespace _GAME.Scripts.FSM.Brick
             GenerateSpawnPoints();
         }
 
-        private Vector3 GetRandomPositionInBounds()
-        {
-            return new Vector3(
-                Random.Range(spawnPointBounds.min.x, spawnPointBounds.max.x),
-                0,
-                Random.Range(spawnPointBounds.min.z, spawnPointBounds.max.z)
-            );
-        }
-
-        private bool IsNearOtherPoints(Vector3 position, List<Vector3> points, float minDistance)
-        {
-            foreach (var point in points)
-            {
-                if (Vector3.Distance(position, point) < minDistance)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public void GenerateSpawnPoints()
         {
             spawnPoints.Clear();
 
-            var spacingX = 1f;
-            var spacingZ = 1f;
-
             var pointsX = Mathf.FloorToInt(spawnPointBounds.size.x / spacingX);
             var pointsZ = Mathf.FloorToInt(spawnPointBounds.size.z / spacingZ);
+
+            // Đảm bảo có ít nhất một số lượng điểm tối thiểu
+            pointsX = Mathf.Max(pointsX, 5);
+            pointsZ = Mathf.Max(pointsZ, 5);
 
             var startPoint = new Vector3(
                 spawnPointBounds.min.x + spacingX / 2,
@@ -77,13 +61,59 @@ namespace _GAME.Scripts.FSM.Brick
                     );
 
                     NavMeshHit hit;
-                    if (NavMesh.SamplePosition(pointPosition, out hit, 1.0f, NavMesh.AllAreas))
+                    var searchRadius = Mathf.Max(spacingX, spacingZ) * 0.5f;
+                    if (NavMesh.SamplePosition(pointPosition, out hit, searchRadius, NavMesh.AllAreas))
                     {
                         var spawnPoint = hit.position + Vector3.up * 0.1f;
                         spawnPoints.Add(spawnPoint);
+                        Debug.DrawLine(pointPosition, spawnPoint, Color.green, 10f);
+                    }
+                    else
+                    {
+                        Debug.DrawLine(pointPosition, pointPosition + Vector3.up, Color.red, 10f);
                     }
                 }
             }
+
+            Debug.Log($"Generated {spawnPoints.Count} spawn points with spacing ({spacingX}, {spacingZ})");
+
+            RefreshAvailableSpawnPoints();
+        }
+
+        public void RefreshAvailableSpawnPoints()
+        {
+            availableSpawnPoints = new List<Vector3>(spawnPoints);
+            Debug.Log($"Refreshed available spawn points: {availableSpawnPoints.Count}");
+        }
+
+        public List<Vector3> GetSpawnPoints()
+        {
+            return spawnPoints;
+        }
+
+        public List<Vector3> GetRandomSpawnPoints(int count)
+        {
+            if (availableSpawnPoints.Count == 0)
+            {
+                RefreshAvailableSpawnPoints();
+                Debug.Log("Refreshed available spawn points pool");
+            }
+
+            count = Mathf.Min(count, availableSpawnPoints.Count);
+
+            var points = new List<Vector3>();
+
+            for (var i = 0; i < count; i++)
+            {
+                if (availableSpawnPoints.Count == 0) break;
+
+                var randomIndex = Random.Range(0, availableSpawnPoints.Count);
+                points.Add(availableSpawnPoints[randomIndex]);
+                availableSpawnPoints.RemoveAt(randomIndex);
+            }
+
+            Debug.Log($"Retrieved {points.Count} random spawn points, {availableSpawnPoints.Count} remaining");
+            return points;
         }
 
         private void OnDrawGizmos()
@@ -94,44 +124,13 @@ namespace _GAME.Scripts.FSM.Brick
             }
 
             Gizmos.color = Color.yellow;
-
             Gizmos.DrawWireCube(this.spawnPointBounds.center, this.spawnPointBounds.size);
 
             Gizmos.color = Color.red;
-
             foreach (var point in this.spawnPoints)
             {
                 Gizmos.DrawSphere(point, 0.1f);
             }
-        }
-
-        public List<Vector3> GetSpawnPoints()
-        {
-            return this.spawnPoints;
-        }
-
-        public List<Vector3> GetRandomSpawnPoints(int count)
-        {
-            if (count >= this.spawnPoints.Count)
-            {
-                return new List<Vector3>(this.spawnPoints);
-            }
-
-            var points = new List<Vector3>();
-            var indices = new List<int>();
-
-            for(var i = 0; i < this.spawnPoints.Count; i++)
-            {
-                indices.Add(i);
-            }
-
-            for (var i = 0; i < count; i++)
-            {
-                var randomIndex = Random.Range(0, indices.Count);
-                points.Add(this.spawnPoints[indices[randomIndex]]);
-                indices.RemoveAt(randomIndex);
-            }
-            return points;
         }
     }
 }
