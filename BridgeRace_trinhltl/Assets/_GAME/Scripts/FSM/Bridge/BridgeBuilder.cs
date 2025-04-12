@@ -2,6 +2,7 @@ namespace _GAME.Scripts.FSM.Bridge
 {
     using System;
     using System.Collections.Generic;
+    using Unity.AI.Navigation;
     using Unity.Mathematics;
     using UnityEngine;
     using UnityEngine.Splines;
@@ -23,6 +24,7 @@ namespace _GAME.Scripts.FSM.Bridge
         [Header("Bridge Properties")]
         [SerializeField] private float bridgeWidth = 2f;
         [SerializeField] private Transform bridgeTransform;
+        [SerializeField] private NavMeshSurface navMesh;
 
         private List<GameObject> bridgeSteps = new List<GameObject>();
 
@@ -60,6 +62,11 @@ namespace _GAME.Scripts.FSM.Bridge
 
                 var step = CreateBridgeStep(position, tangent, up);
                 bridgeSteps.Add(step);
+            }
+
+            if (this.navMesh != null)
+            {
+                this.navMesh.BuildNavMesh();
             }
         }
 
