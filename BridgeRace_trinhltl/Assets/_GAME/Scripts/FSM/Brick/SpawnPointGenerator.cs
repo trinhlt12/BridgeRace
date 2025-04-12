@@ -18,12 +18,12 @@ namespace _GAME.Scripts.FSM.Brick
 
         private void Awake()
         {
-            if (this.spawnArea.GetComponent<Renderer>())
+            if (this.spawnArea.GetComponentInChildren<Renderer>())
             {
-                this.spawnPointBounds = this.spawnArea.GetComponent<Renderer>().bounds;
-            }else if (this.spawnArea.GetComponent<Collider>())
+                this.spawnPointBounds = this.spawnArea.GetComponentInChildren<Renderer>().bounds;
+            }else if (this.spawnArea.GetComponentInChildren<Collider>())
             {
-                spawnPointBounds = this.spawnArea.GetComponent<Collider>().bounds;
+                spawnPointBounds = this.spawnArea.GetComponentInChildren<Collider>().bounds;
             }
 
             GenerateSpawnPoints();
@@ -52,30 +52,38 @@ namespace _GAME.Scripts.FSM.Brick
 
         public void GenerateSpawnPoints()
         {
-            this.spawnPoints.Clear();
-            var attemps = 0;
-            var maxAttempts = numberOfSpawnPoints * 10;
+            spawnPoints.Clear();
 
+            var spacingX = 1f;
+            var spacingZ = 1f;
 
+            var pointsX = Mathf.FloorToInt(spawnPointBounds.size.x / spacingX);
+            var pointsZ = Mathf.FloorToInt(spawnPointBounds.size.z / spacingZ);
 
-            while (this.spawnPoints.Count < this.numberOfSpawnPoints && attemps < maxAttempts)
+            var startPoint = new Vector3(
+                spawnPointBounds.min.x + spacingX / 2,
+                0,
+                spawnPointBounds.min.z + spacingZ / 2
+            );
+
+            for (var x = 0; x < pointsX; x++)
             {
-                var randomPos = GetRandomPositionInBounds();
-                NavMeshHit hit;
-
-                if (NavMesh.SamplePosition(randomPos, out hit, 1.0f, NavMesh.AllAreas))
+                for (var z = 0; z < pointsZ; z++)
                 {
-                    if (!IsNearOtherPoints(hit.position, this.spawnPoints, this.minDistanceBetweenPoints))
+                    var pointPosition = new Vector3(
+                        startPoint.x + x * spacingX,
+                        0,
+                        startPoint.z + z * spacingZ
+                    );
+
+                    NavMeshHit hit;
+                    if (NavMesh.SamplePosition(pointPosition, out hit, 1.0f, NavMesh.AllAreas))
                     {
                         var spawnPoint = hit.position + Vector3.up * 0.1f;
-                        this.spawnPoints.Add(spawnPoint);
+                        spawnPoints.Add(spawnPoint);
                     }
                 }
-
-                attemps++;
             }
-
-            Debug.Log($"Generated {spawnPoints.Count} spawn points after {attemps} attempts");
         }
 
         private void OnDrawGizmos()
