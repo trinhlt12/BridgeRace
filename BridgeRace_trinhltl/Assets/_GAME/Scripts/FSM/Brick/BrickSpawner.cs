@@ -82,7 +82,6 @@ namespace _GAME.Scripts.FSM.Brick
             {
                 var currentColor = colors[colorIndex];
 
-                // Chỉ lấy thêm điểm nếu màu này chưa đủ số lượng tối đa
                 if (result[currentColor].Count < maxBricksPerColor)
                 {
                     int randomIndex = UnityEngine.Random.Range(0, allAvailablePoints.Count);

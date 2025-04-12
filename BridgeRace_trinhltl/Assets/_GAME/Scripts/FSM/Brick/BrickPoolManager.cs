@@ -48,6 +48,7 @@ namespace _GAME.Scripts.FSM.Brick
             brick.transform.position = position;
 
             var material = _materialManager.GetMaterial(color);
+
             brick.Initialize(color, material);
             return brick;
         }

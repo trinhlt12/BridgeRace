@@ -240,6 +240,56 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d230cc8be529a542a08cb878ab14b18, type: 3}
+--- !u!1 &287094047
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 287094049}
+  - component: {fileID: 287094048}
+  m_Layer: 0
+  m_Name: BridgeBuilder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &287094048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287094047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 757c81adffad4665997eab4fa71d1afe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  splineContainer: {fileID: 2094686225}
+  splineIndex: 0
+  bridgeStepPrefab: {fileID: 7354596081952332329, guid: 9621133bdf8c04544934545b08e9f5f7,
+    type: 3}
+  defaultMaterial: {fileID: 2100000, guid: d11990d7c3ba77a46bb57207b174468d, type: 2}
+  bridgeWidth: 2
+--- !u!4 &287094049
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 287094047}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.15774, y: 1.5605254, z: 5.0860023}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &301805554
 GameObject:
   m_ObjectHideFlags: 3
@@ -559,7 +609,7 @@ Transform:
   m_GameObject: {fileID: 663961064}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2.58}
+  m_LocalPosition: {x: 0, y: 0, z: 3.11}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -805,6 +855,8 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 3ac88f9a2e18a0d4191b322330647b14, type: 2}
   - brickColor: 3
     material: {fileID: 2100000, guid: 4d54c96d6a7bf1d4e8e35935acc15275, type: 2}
+  - brickColor: 4
+    material: {fileID: 2100000, guid: d11990d7c3ba77a46bb57207b174468d, type: 2}
 --- !u!4 &957159960
 Transform:
   m_ObjectHideFlags: 0
@@ -1517,3 +1569,4 @@ SceneRoots:
   - {fileID: 786789850}
   - {fileID: 671451502}
   - {fileID: 663961065}
+  - {fileID: 287094049}

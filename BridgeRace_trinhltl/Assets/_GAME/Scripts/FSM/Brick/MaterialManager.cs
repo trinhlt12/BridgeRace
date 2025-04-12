@@ -11,12 +11,13 @@ namespace _GAME.Scripts.FSM.Brick
         public class BrickColorData
         {
             public BrickColor brickColor;
-            public Material material;
+            public Material   material;
         }
 
         [SerializeField] private List<BrickColorData> materialList = new List<BrickColorData>();
 
         private readonly Dictionary<BrickColor, Material> _materialsDict = new Dictionary<BrickColor, Material>();
+
         private void Awake()
         {
             if (Instance == null)
@@ -38,9 +39,15 @@ namespace _GAME.Scripts.FSM.Brick
 
         public Material GetMaterial(BrickColor brickColor)
         {
-            return this.materialList[(int)brickColor].material;
-
+            if ((int)brickColor >= 0 && (int)brickColor < this.materialList.Count)
+            {
+                return this.materialList[(int)brickColor].material;
+            }
+            else
+            {
+                Debug.LogError($"Invalid BrickColor: {brickColor}. Ensure it is mapped in the materialList.");
+                return null;
+            }
         }
-
     }
 }

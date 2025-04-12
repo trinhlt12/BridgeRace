@@ -10,6 +10,7 @@ namespace _GAME.Scripts.FSM.Brick
         Blue = 1,
         Orange = 2,
         Green = 3,
+        Grey = 4,
     }
 
     public class Brick : MonoBehaviour

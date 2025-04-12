@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Brick
+  - Bridge
   layers:
   - Default
   - TransparentFX
