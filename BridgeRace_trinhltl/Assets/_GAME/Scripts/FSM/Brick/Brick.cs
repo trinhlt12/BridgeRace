@@ -1,5 +1,7 @@
 namespace _GAME.Scripts.FSM.Brick
 {
+    using UnityEngine;
+
     public enum BrickColor
     {
         Pink = 0,
@@ -8,7 +10,8 @@ namespace _GAME.Scripts.FSM.Brick
         Green = 3,
     }
 
-    public class Brick
+    public class Brick : MonoBehaviour
     {
+
     }
 }
