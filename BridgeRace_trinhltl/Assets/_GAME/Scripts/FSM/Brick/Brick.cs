@@ -1,6 +1,7 @@
 namespace _GAME.Scripts.FSM.Brick
 {
     using System;
+    using _GAME.Scripts.Player;
     using UnityEngine;
 
     public enum BrickColor
@@ -33,6 +34,19 @@ namespace _GAME.Scripts.FSM.Brick
         public void ReturnToPool()
         {
             BrickPoolManager.Instance.ReturnBrick(this, Color);
+        }
+
+
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if(other.CompareTag("Player"))
+            {
+                if (this.Color == BrickColor.Pink)
+                {
+                    other.GetComponent<PlayerController>().pickUpBrick(this.Color);
+                }
+            }
         }
     }
 }

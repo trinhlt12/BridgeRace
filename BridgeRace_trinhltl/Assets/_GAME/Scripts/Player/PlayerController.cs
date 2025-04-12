@@ -2,6 +2,7 @@ namespace _GAME.Scripts.Player
 {
     using System;
     using _GAME.Scripts.FSM;
+    using _GAME.Scripts.FSM.Brick;
     using _GAME.Scripts.FSM.PlayerStates;
     using UnityEngine;
 
@@ -18,13 +19,11 @@ namespace _GAME.Scripts.Player
 
         protected override void OnInit()
         {
+            SetCharacterColor(characterColor);
+
             if (this._stateMachine != null)
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();
-            }
-            else
-            {
-                Debug.LogError("State machine is null in PlayerController.OnInit");
             }
         }
 
@@ -50,6 +49,11 @@ namespace _GAME.Scripts.Player
             }
 
             return new Vector2(joystick.Horizontal, joystick.Vertical);
+        }
+
+        public override void pickUpBrick(BrickColor color)
+        {
+            base.pickUpBrick(color);
         }
     }
 }
