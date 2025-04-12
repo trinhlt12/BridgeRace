@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 2963868821162461858}
   - component: {fileID: 4276878094837953409}
   - component: {fileID: 91795597879672460}
+  - component: {fileID: 3019618620785137701}
+  - component: {fileID: 4703940741214114050}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -84,6 +86,35 @@ CapsuleCollider:
   m_Height: 1.5181772
   m_Direction: 1
   m_Center: {x: 0, y: 0.51945084, z: 0}
+--- !u!114 &3019618620785137701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211102514613379356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce4bb7c73e0488290af029795459eda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4703940741214114050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211102514613379356}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b9e0926731472e8cce13b49a0d5719, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateMachine: {fileID: 3019618620785137701}
+  rb: {fileID: 0}
+  joystick: {fileID: 0}
+  moveSpeed: 5
+  rotationSpeed: 10
 --- !u!1001 &8534901427021787369
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -92,6 +123,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2963868821162461858}
     m_Modifications:
+    - target: {fileID: 243926603113532292, guid: ed84b15b632f06b45978ed64721ae6c6,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 8c6e4e7e615a03e4abc265781a23d96c, type: 2}
     - target: {fileID: 2706087397073616482, guid: ed84b15b632f06b45978ed64721ae6c6,
         type: 3}
       propertyPath: m_Materials.Array.data[0]

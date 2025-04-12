@@ -8,6 +8,8 @@ namespace _GAME.Scripts.Player
     public class PlayerController : Character
     {
         [SerializeField] private FloatingJoystick joystick;
+        public float moveSpeed = 5f;
+        public float rotationSpeed = 10f;
 
         protected override void Awake()
         {

@@ -8,7 +8,7 @@ namespace _GAME.Scripts.FSM
         [SerializeField] protected StateMachine _stateMachine;
         public        Rigidbody    rb;
 
-        public Animator animator { get; private set; }
+        public Animator animator;
 
         //brick count
         public Color characterColor { get; private set; }
@@ -21,7 +21,11 @@ namespace _GAME.Scripts.FSM
             }
 
             rb       = this.gameObject.GetComponent<Rigidbody>();
-            animator = GetComponent<Animator>();
+
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+            }
 
             this.InitializeStates();
 

@@ -1,6 +1,7 @@
 namespace _GAME.Scripts.FSM
 {
     using _GAME.Scripts.Player;
+    using UnityEngine;
 
     public class BaseState : IState
     {
@@ -11,6 +12,7 @@ namespace _GAME.Scripts.FSM
         public BaseState(StateMachine stateMachine, Character character)
         {
             _stateMachine = stateMachine;
+            _character    = character;
             this._player = character as PlayerController;
         }
 
@@ -33,9 +35,15 @@ namespace _GAME.Scripts.FSM
 
         private void PlayAnimation(IState state)
         {
-            if (this._player.animator == null) return;
-
-            this._player.animator.Play(state.GetType().Name);
+            if (this._player.animator != null)
+            {
+                var stateName = state.GetType().Name;
+                this._player.animator.Play(stateName);
+                Debug.Log($"Attempting to play animation for state: {stateName}");
+            }else
+            {
+                Debug.LogError("Animator is null, cannot play animation.");
+            }
         }
     }
 }

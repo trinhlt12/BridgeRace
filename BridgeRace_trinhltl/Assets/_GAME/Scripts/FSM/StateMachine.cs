@@ -14,6 +14,11 @@ namespace _GAME.Scripts.FSM
             _currentState?.OnUpdate();
         }
 
+        private void FixedUpdate()
+        {
+            _currentState?.OnFixedUpdate();
+        }
+
         public void Initialize<T>() where T : IState
         {
             ChangeState<T>();
