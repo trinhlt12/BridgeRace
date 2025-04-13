@@ -13,6 +13,7 @@ namespace _GAME.Scripts.FSM
 
         public                   Animator animator;
         [SerializeField] private Renderer _renderer;
+        public                   int      brickCount = 0; //brick count
 
         //brick count
 
@@ -63,6 +64,15 @@ namespace _GAME.Scripts.FSM
 
         public virtual void pickUpBrick(Brick.Brick brick)
         {
+            if (brick != null)
+            {
+                brickCount++;
+            }
+        }
+
+        public virtual void placeBrick()
+        {
+            brickCount--;
         }
     }
 }

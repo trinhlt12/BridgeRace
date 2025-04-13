@@ -75,5 +75,11 @@ namespace _GAME.Scripts.Player
             vector3.y            = this._pickedBricks.Count * brickHeight;
             brickVisual.position = vector3;
         }
+
+        public override void placeBrick()
+        {
+            base.placeBrick();
+            /*_pickedBricks.Remove(brick);*/
+        }
     }
 }
