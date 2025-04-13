@@ -1681,6 +1681,11 @@ PrefabInstance:
       objectReference: {fileID: 719313540}
     - target: {fileID: 4703940741214114050, guid: 234ee45778616a34e8137ed514bfab9e,
         type: 3}
+      propertyPath: moveSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4703940741214114050, guid: 234ee45778616a34e8137ed514bfab9e,
+        type: 3}
       propertyPath: BrickHolder
       value: 
       objectReference: {fileID: 1554611020}
