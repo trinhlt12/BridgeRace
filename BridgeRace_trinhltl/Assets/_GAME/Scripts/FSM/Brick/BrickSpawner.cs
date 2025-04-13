@@ -54,6 +54,10 @@ namespace _GAME.Scripts.FSM.Brick
             {
                 if (spawnPointsPerColor.ContainsKey(color) && spawnPointsPerColor[color].Count > 0)
                 {
+                    if (color.Equals(BrickColor.Grey))
+                    {
+                        continue; // Skip spawning grey bricks
+                    }
                     SpawnBricksOfColorAtPoints(color, spawnPointsPerColor[color]);
                 }
             }
@@ -66,12 +70,16 @@ namespace _GAME.Scripts.FSM.Brick
             var result = new Dictionary<BrickColor, List<Vector3>>();
             var allAvailablePoints = new List<Vector3>(_spawnPointGenerator.GetSpawnPoints());
 
-            var colorCount = Enum.GetValues(typeof(BrickColor)).Length;
+            var colorCount = Enum.GetValues(typeof(BrickColor)).Length - 1; // Exclude Grey
 
             var pointsPerColor = Mathf.Max(minBricksPerColor, allAvailablePoints.Count / colorCount);
 
             foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
             {
+                if (color.Equals(BrickColor.Grey))
+                {
+                    continue;
+                }
                 result[color] = new List<Vector3>();
             }
 
@@ -84,17 +92,12 @@ namespace _GAME.Scripts.FSM.Brick
 
                 if (result[currentColor].Count < maxBricksPerColor)
                 {
-                    int randomIndex = UnityEngine.Random.Range(0, allAvailablePoints.Count);
+                    var randomIndex = UnityEngine.Random.Range(0, allAvailablePoints.Count);
                     result[currentColor].Add(allAvailablePoints[randomIndex]);
                     allAvailablePoints.RemoveAt(randomIndex);
                 }
 
                 colorIndex = (colorIndex + 1) % colorCount;
-            }
-
-            foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
-            {
-                Debug.Log($"Allocated {result[color].Count} spawn points for {color}");
             }
 
             return result;
