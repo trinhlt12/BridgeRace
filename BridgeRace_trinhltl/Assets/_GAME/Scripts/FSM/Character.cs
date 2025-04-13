@@ -1,8 +1,10 @@
 namespace _GAME.Scripts.FSM
 {
     using System;
+    using System.Collections.Generic;
     using _GAME.Scripts.FSM.Brick;
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     public abstract class Character : MonoBehaviour
     {
@@ -11,9 +13,11 @@ namespace _GAME.Scripts.FSM
 
         public Rigidbody rb;
 
-        public                   Animator animator;
-        [SerializeField] private Renderer _renderer;
-        public                   int      brickCount = 0; //brick count
+        public                                       Animator           animator;
+        [SerializeField]                     private Renderer           _renderer;
+        public                                       int                BrickCount => this.brickStack.Count;
+
+        public readonly                             Stack<Brick.Brick> brickStack = new Stack<Brick.Brick>(); //stack of bricks
 
         //brick count
 
@@ -66,13 +70,33 @@ namespace _GAME.Scripts.FSM
         {
             if (brick != null)
             {
-                brickCount++;
+                brickStack.Push(brick);
             }
         }
 
-        public virtual void placeBrick()
+        public virtual void placeBrick(Brick.Brick brick)
         {
-            brickCount--;
+            if (brick != null)
+            {
+                if (brickStack.Count > 0)
+                {
+                    this.brickStack.Pop();
+                    brick.transform.SetParent(null);
+                    brick.ReturnToPool();
+                }
+            }
+        }
+
+        public void ClearBrickStack()
+        {
+            while (this.brickStack.Count > 0)
+            {
+                var brick = this.brickStack.Pop();
+                if (brick != null)
+                {
+                    brick.ReturnToPool();
+                }
+            }
         }
     }
 }

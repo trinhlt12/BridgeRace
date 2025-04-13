@@ -76,10 +76,22 @@ namespace _GAME.Scripts.Player
             brickVisual.position = vector3;
         }
 
-        public override void placeBrick()
+        public override void placeBrick(Brick brick)
         {
-            base.placeBrick();
-            /*_pickedBricks.Remove(brick);*/
+            base.placeBrick(brick);
+        }
+
+        public Brick GetTopBrick()
+        {
+            if (this.brickStack.Count > 0)
+            {
+                var topBrick = brickStack.Peek();
+                return topBrick;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

@@ -36,16 +36,17 @@ namespace _GAME.Scripts.FSM.Bridge
             if (other.CompareTag("Player"))
             {
                 var player = other.GetComponent<PlayerController>();
+                var topBrick = player.GetTopBrick();
 
-                if(player.brickCount <= 0) return;
+                if(player.BrickCount <= 0) return;
 
                 var playerColor = player.characterColor;
                 var material = MaterialManager.Instance.GetMaterial(playerColor);
-                if (player.brickCount > 0)
+                if (player.BrickCount > 0)
                 {
                     this.renderer.material = material;
                 }
-                other.GetComponent<PlayerController>().placeBrick();
+                other.GetComponent<PlayerController>().placeBrick(topBrick);
             }
         }
     }
