@@ -30,6 +30,7 @@ namespace _GAME.Scripts.FSM.Brick
             {
                 spawnPointBounds = this.spawnArea.GetComponentInChildren<Collider>().bounds;
             }
+            Debug.Log($"Spawn area bounds: center={spawnPointBounds.center}, size={spawnPointBounds.size}");
 
             GenerateSpawnPoints();
         }
@@ -56,7 +57,7 @@ namespace _GAME.Scripts.FSM.Brick
                 {
                     var pointPosition = new Vector3(
                         startPoint.x + x * spacingX,
-                        0,
+                        this.spawnArea.transform.position.y,
                         startPoint.z + z * spacingZ
                     );
 
