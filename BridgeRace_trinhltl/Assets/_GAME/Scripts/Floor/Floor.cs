@@ -8,8 +8,10 @@ namespace _GAME.Scripts.Floor
 
     public class Floor : MonoBehaviour
     {
-        [SerializeField] private List<Character> charactersOnFloor = new List<Character>();
-        private bool _isActive = false;
+        [SerializeField] private SpawnPointGenerator _spawnPointGenerator;
+        [SerializeField] private List<Character>     charactersOnFloor = new List<Character>();
+        private                  bool                _isActive         = false;
+        public                   Transform           _brickParent;
 
         public void Activate(bool activate)
         {
@@ -21,6 +23,11 @@ namespace _GAME.Scripts.Floor
             }
 
             BrickSpawner.Instance.ActivateAllBricks(activate);
+        }
+
+        public SpawnPointGenerator GetSpawnPointGenerator()
+        {
+            return this._spawnPointGenerator;
         }
 
         private void SpawnBricksForCharactersOnFloor()

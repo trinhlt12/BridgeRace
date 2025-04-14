@@ -3,6 +3,7 @@ namespace _GAME.Scripts.Floor
     using System;
     using System.Collections.Generic;
     using _GAME.Scripts.FSM;
+    using _GAME.Scripts.FSM.Brick;
     using UnityEngine;
 
     public class FloorManager : MonoBehaviour
@@ -70,11 +71,18 @@ namespace _GAME.Scripts.Floor
                 floor.Activate(true);
             }
 
+            BrickSpawner.Instance.SetCurrentFloor(floor);
+
             if (character.CompareTag("Player"))
             {
                 currentFloor = floor;
             }
 
+        }
+
+        public int GetCurrentFloor()
+        {
+            return this.floors.IndexOf(this.currentFloor) + 1;
         }
 
         public int GetFloorIndex(Floor floor)

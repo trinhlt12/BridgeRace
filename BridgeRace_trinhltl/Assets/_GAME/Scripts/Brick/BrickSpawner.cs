@@ -9,11 +9,8 @@ namespace _GAME.Scripts.FSM.Brick
 
     public class BrickSpawner : MonoBehaviour
     {
-        [SerializeField] private SpawnPointGenerator _spawnPointGenerator;
         [SerializeField] private int maxBricksPerColor = 25;
-        [SerializeField] private int bricksToSpawnPerBatch = 5;
         [SerializeField] private int minBricksPerColor = 5;
-        [SerializeField] private Transform _brickParent;
         public static BrickSpawner Instance { get; private set; }
 
         private BrickPoolManager _brickPoolManager;
@@ -22,6 +19,8 @@ namespace _GAME.Scripts.FSM.Brick
         public Dictionary<BrickColor, List<Brick>> _activeBricks = new Dictionary<BrickColor, List<Brick>>();
 
         private Dictionary<Brick, int> _brickToSpawnPointIndex = new Dictionary<Brick, int>();
+
+        private SpawnPointGenerator _currentSpawnPointGenerator;
 
         private void Awake()
         {
@@ -61,6 +60,12 @@ namespace _GAME.Scripts.FSM.Brick
         public void SetCurrentFloor(Floor floor)
         {
             _currentFloor = floor;
+
+            _currentSpawnPointGenerator = floor.GetSpawnPointGenerator();
+            if (this._currentSpawnPointGenerator == null)
+            {
+                Debug.LogError("No spawnpoint generator found");
+            }
         }
 
         public void SpawnBricksForCharacters(List<Character> characters)
@@ -95,7 +100,7 @@ namespace _GAME.Scripts.FSM.Brick
         private Dictionary<BrickColor, List<Vector3>> AllocateSpawnPointsForColors(HashSet<BrickColor> colors)
         {
             var result = new Dictionary<BrickColor, List<Vector3>>();
-            var allAvailablePoints = new List<Vector3>(_spawnPointGenerator.GetSpawnPoints());
+            var allAvailablePoints = new List<Vector3>(this._currentSpawnPointGenerator.GetSpawnPoints());
 
             if (colors.Count == 0)
                 return result;
@@ -151,9 +156,9 @@ namespace _GAME.Scripts.FSM.Brick
 
             foreach (var point in points)
             {
-                var spawnPointIndex = _spawnPointGenerator.GetSpawnPointIndex(point);
+                var spawnPointIndex = this._currentSpawnPointGenerator.GetSpawnPointIndex(point);
 
-                if (spawnPointIndex == -1 || !this._spawnPointGenerator._spawnPointAvailability[spawnPointIndex])
+                if (spawnPointIndex == -1 || !this._currentSpawnPointGenerator._spawnPointAvailability[spawnPointIndex])
                 {
                     continue;
                 }
@@ -163,12 +168,12 @@ namespace _GAME.Scripts.FSM.Brick
                 if (brick != null)
                 {
                     brick.Initialize(color, brickMaterial);
-                    brick.transform.SetParent(_brickParent);
+                    brick.transform.SetParent(this._currentFloor._brickParent);
 
                     _activeBricks[color].Add(brick);
 
                     this._brickToSpawnPointIndex[brick] = spawnPointIndex;
-                    this._spawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, false);
+                    this._currentSpawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, false);
                 }
             }
         }
@@ -225,7 +230,7 @@ namespace _GAME.Scripts.FSM.Brick
             if (_brickToSpawnPointIndex.ContainsKey(brick))
             {
                 int spawnPointIndex = _brickToSpawnPointIndex[brick];
-                _spawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
+                this._currentSpawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
                 _brickToSpawnPointIndex.Remove(brick);
             }
 
@@ -238,15 +243,15 @@ namespace _GAME.Scripts.FSM.Brick
 
             RemoveBrick(brick);
 
-            var newPoints = _spawnPointGenerator.GetRandomSpawnPoints(1);
+            var newPoints = this._currentSpawnPointGenerator.GetRandomSpawnPoints(1);
             if (newPoints.Count > 0)
             {
                 var newPosition = newPoints[0];
-                var newSpawnPointIndex = _spawnPointGenerator.GetSpawnPointIndex(newPosition);
+                var newSpawnPointIndex = this._currentSpawnPointGenerator.GetSpawnPointIndex(newPosition);
 
                 brick.transform.position = newPosition + Vector3.down * 0.15f;
 
-                brick.transform.SetParent(_brickParent);
+                brick.transform.SetParent(this._currentFloor._brickParent);
                 brick.transform.localRotation = Quaternion.identity;
                 var brickVisual = brick.transform.GetChild(0);
                 if (brickVisual != null)
@@ -260,7 +265,7 @@ namespace _GAME.Scripts.FSM.Brick
                 this._activeBricks[brick.Color].Add(brick);
 
                 _brickToSpawnPointIndex[brick] = newSpawnPointIndex;
-                _spawnPointGenerator.SetSpawnPointAvailability(newSpawnPointIndex, false);
+                this._currentSpawnPointGenerator.SetSpawnPointAvailability(newSpawnPointIndex, false);
             }
             else
             {
