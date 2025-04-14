@@ -36,10 +36,10 @@ namespace _GAME.Scripts.Floor
 
         private void InitializeFloors()
         {
-            /*for (var i = 0; i < this.floors.Count; i++)
+            for (var i = 0; i < this.floors.Count; i++)
             {
-                this.floors[i].Activate(i == 0);
-            }*/
+                Debug.Log(this.floors[i].name);
+            }
 
             if (this.floors.Count > 0)
             {

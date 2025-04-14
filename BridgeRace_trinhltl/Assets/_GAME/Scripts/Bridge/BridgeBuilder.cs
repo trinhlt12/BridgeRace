@@ -78,16 +78,6 @@ namespace _GAME.Scripts.FSM.Bridge
 
             step.transform.localScale = new Vector3(this.bridgeWidth, this.stepHeight, this.stepLength);
 
-            var renderer = step.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                renderer.material = this.defaultMaterial;
-            }
-            else
-            {
-                Debug.LogWarning("Renderer component not found on the bridge step prefab.");
-            }
-
             var bridgeStepComponent = step.GetComponent<BridgeStep>();
             if (bridgeStepComponent == null)
             {

@@ -14,13 +14,12 @@ namespace _GAME.Scripts.FSM.Bridge
         */
 
         [SerializeField] private Material defaultMaterial;
-        [SerializeField] private Renderer renderer;
 
         private void Awake()
         {
             if (this.defaultMaterial != null)
             {
-                this.renderer.material = this.defaultMaterial;
+                this.GetComponentInChildren<Renderer>().material = this.defaultMaterial;
             }
         }
         public void Reset()
@@ -30,7 +29,7 @@ namespace _GAME.Scripts.FSM.Bridge
 
             if (this.defaultMaterial != null)
             {
-                this.renderer.material = this.defaultMaterial;
+                this.GetComponentInChildren<Renderer>().material = this.defaultMaterial;
             }
         }
 
@@ -52,7 +51,7 @@ namespace _GAME.Scripts.FSM.Bridge
 
                 var material = MaterialManager.Instance.GetMaterial(playerColor);
 
-                this.renderer.material = material;
+                this.GetComponentInChildren<Renderer>().material = material;
 
                 other.GetComponent<PlayerController>().placeBrick(topBrick);
 

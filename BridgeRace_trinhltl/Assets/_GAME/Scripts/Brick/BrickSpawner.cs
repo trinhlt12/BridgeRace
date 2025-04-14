@@ -8,7 +8,6 @@ namespace _GAME.Scripts.FSM.Brick
     {
         [SerializeField] private SpawnPointGenerator _spawnPointGenerator;
         [SerializeField] private int                 maxBricksPerColor     = 25;
-        [SerializeField] private int                 bricksToSpawnPerBatch = 5;
         [SerializeField] private int                 minBricksPerColor     = 5;
         [SerializeField] private Transform           _brickParent;
         public static            BrickSpawner        Instance { get; private set; }

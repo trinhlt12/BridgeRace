@@ -8,17 +8,15 @@ namespace _GAME.Scripts.FSM.Brick
 {
     public class SpawnPointGenerator : MonoBehaviour
     {
-        [SerializeField] private int numberOfSpawnPoints = 100;
-        [SerializeField] private float minDistanceBetweenPoints = 1.5f;
         [SerializeField] private GameObject spawnArea;
         public Bounds spawnPointBounds;
         [SerializeField] private bool visualizePoints = true;
         [SerializeField] private float spacingX = 1.5f;
         [SerializeField] private float spacingZ = 1.5f;
 
-        private List<Vector3> spawnPoints = new List<Vector3>();
-        private List<Vector3> availableSpawnPoints = new List<Vector3>();
-        public bool[] _spawnPointAvailability;
+        private readonly List<Vector3> spawnPoints          = new List<Vector3>();
+        private          List<Vector3> availableSpawnPoints = new List<Vector3>();
+        public           bool[]        _spawnPointAvailability;
 
         private void Awake()
         {
