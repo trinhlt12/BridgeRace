@@ -17,6 +17,7 @@ namespace _GAME.Scripts.FSM.Brick
     {
         public BrickColor Color { get; private set; }
         private Renderer _renderer;
+        [SerializeField] private Outline outline;
 
         private void Awake()
         {
@@ -31,6 +32,15 @@ namespace _GAME.Scripts.FSM.Brick
                 _renderer.material = material;
             }
         }
+
+        public void Highlight(bool highlight)
+        {
+            if (outline != null)
+            {
+                outline.enabled = highlight;
+            }
+        }
+
 
         public void ReturnToPool()
         {

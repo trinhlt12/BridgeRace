@@ -500,6 +500,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxBricksPerColor: 25
   minBricksPerColor: 5
+  _currentSpawnPointGenerator: {fileID: 0}
 --- !u!4 &671451502
 Transform:
   m_ObjectHideFlags: 0
@@ -1183,6 +1184,16 @@ PrefabInstance:
       propertyPath: _renderer
       value: 
       objectReference: {fileID: 511312355}
+    - target: {fileID: 8808372231309346662, guid: e13009fa7fd9e3042ab3c9321b4ac629,
+        type: 3}
+      propertyPath: moveSpeed
+      value: 33
+      objectReference: {fileID: 0}
+    - target: {fileID: 8808372231309346662, guid: e13009fa7fd9e3042ab3c9321b4ac629,
+        type: 3}
+      propertyPath: rotationSpeed
+      value: 11
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

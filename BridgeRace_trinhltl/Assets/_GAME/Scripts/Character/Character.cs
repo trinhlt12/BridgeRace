@@ -78,6 +78,17 @@ namespace _GAME.Scripts.Character
             if (brick != null)
             {
                 brickStack.Push(brick);
+                if (BrickSpawner.Instance._activeBricks.ContainsKey(brick.Color))
+                {
+                    BrickSpawner.Instance._activeBricks[brick.Color].Remove(brick);
+                }
+
+                if (BrickSpawner.Instance._brickToSpawnPointIndex.ContainsKey(brick))
+                {
+                    int spawnPointIndex = BrickSpawner.Instance._brickToSpawnPointIndex[brick];
+                    BrickSpawner.Instance._currentSpawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
+                    BrickSpawner.Instance._brickToSpawnPointIndex.Remove(brick);
+                }
             }
 
             brick.transform.SetParent(BrickHolder);

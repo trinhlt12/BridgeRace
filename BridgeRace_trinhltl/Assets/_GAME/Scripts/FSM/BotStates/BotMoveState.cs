@@ -29,7 +29,6 @@ namespace _GAME.Scripts.FSM.BotStates
             base.OnEnter();
 
             BrickSpawner.Instance.OnBricksSpawned += HandleBricksSpawned;
-            _targetBrick = FindNearestBrick();
 
         }
 
@@ -38,85 +37,25 @@ namespace _GAME.Scripts.FSM.BotStates
             if (color == this._bot.characterColor && this._targetBrick == null)
             {
                 _targetBrick = FindNearestBrick();
-                this.FindNextTarget();
-                Debug.LogWarning(this._targetBrick);
             }
         }
 
-        public override void OnUpdate()
-        {
-            base.OnUpdate();
-
-            if(this._bot == null) return;
-
-            /*if (this._bot.HasReachedDestination())
-            {
-                HandleTargetReached();
-            }*/
-
-            if (Time.time >= this._lastTargetFindTime + this._findTargetCooldown)
-            {
-                this.FindNextTarget();
-                _lastTargetFindTime = Time.time;
-            }
-        }
-
-        private void HandleTargetReached()
-        {
-
-            Debug.LogWarning("REACHED TARGET");
-        }
-
-        private void FindNextTarget()
-        {
-            FindBrickTarget();
-        }
-
-        private void FindBridgeTarget()
-        {
-           //
-        }
-
-        private void FindBrickTarget()
-        {
-            var nearestBrick = this.FindNearestBrick();
-
-            if(nearestBrick != null)
-            {
-                this.currentTargetType = BotTargetType.Brick;
-
-                this._targetTransform = nearestBrick.transform;
-
-                this._targetPosition = this._targetTransform.position;
-
-                this._bot.SetDestination(this._targetPosition);
-            }
-            else
-            {
-                //Find Bridge target
-                this._stateMachine.ChangeState<BotIdleState>();
-            }
-        }
-
-        public Brick FindNearestBrick()
+        private Brick FindNearestBrick()
         {
             Brick nearestBrick = null;
-            var   minDistance  = float.MaxValue;
+            float minDistance  = float.MaxValue;
 
-            if (BrickSpawner.Instance._activeBricks.ContainsKey(this._bot.characterColor))
+            if (BrickSpawner.Instance != null &&
+                BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks))
             {
-                var brickList = BrickSpawner.Instance._activeBricks[this._bot.characterColor];
-                Debug.LogWarning($"Active bricks count: {brickList.Count}");
-                foreach (var brick in brickList)
+                foreach (var brick in bricks)
                 {
                     if (brick != null && brick.gameObject.activeInHierarchy)
                     {
-                        var distance = Vector3.Distance(this._bot.transform.position,
-                            brick.gameObject.transform.position);
-
+                        var distance = Vector3.Distance(this._bot.transform.position, brick.transform.position);
                         if (distance < minDistance)
                         {
-                            minDistance = distance;
+                            minDistance  = distance;
                             nearestBrick = brick;
                         }
                     }
@@ -124,6 +63,33 @@ namespace _GAME.Scripts.FSM.BotStates
             }
             return nearestBrick;
         }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+
+            if (BrickSpawner.Instance != null &&
+                (!BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks) || bricks.Count == 0))
+            {
+                this._stateMachine.ChangeState<BotIdleState>();
+                return;
+            }
+
+
+            this._targetBrick = FindNearestBrick();
+            this._targetBrick.GetComponent<Brick>().Highlight(true);
+            if (this._targetBrick != null)
+            {
+                this._targetPosition = this._targetBrick.transform.position;
+                this._bot.SetDestination(this._targetPosition);
+            }
+
+            if (this._bot.HasReachedDestination())
+            {
+                _targetBrick = null;
+            }
+        }
+
 
         public override void OnExit()
         {

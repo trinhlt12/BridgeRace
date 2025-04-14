@@ -22,9 +22,9 @@ namespace _GAME.Scripts.FSM.Brick
         public delegate void BricksSpawnedDelegate(BrickColor color, int count);
         public event BricksSpawnedDelegate OnBricksSpawned;
 
-        private Dictionary<Brick, int> _brickToSpawnPointIndex = new Dictionary<Brick, int>();
+        public Dictionary<Brick, int> _brickToSpawnPointIndex = new Dictionary<Brick, int>();
 
-        private SpawnPointGenerator _currentSpawnPointGenerator;
+        public SpawnPointGenerator _currentSpawnPointGenerator;
 
         private void Awake()
         {
@@ -276,6 +276,19 @@ namespace _GAME.Scripts.FSM.Brick
             else
             {
                 brick.ReturnToPool();
+            }
+        }
+
+        public List<Brick> GetActiveBricksByColor(BrickColor color)
+        {
+            if (this._activeBricks.TryGetValue(color, out var bricks))
+            {
+                return bricks;
+            }
+            else
+            {
+                Debug.LogWarning($"No active bricks found for color: {color}");
+                return new List<Brick>();
             }
         }
     }
