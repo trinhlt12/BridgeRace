@@ -2,6 +2,7 @@ namespace _GAME.Scripts.Floor
 {
     using System;
     using System.Collections.Generic;
+    using _GAME.Scripts.Character;
     using _GAME.Scripts.FSM;
     using _GAME.Scripts.FSM.Brick;
     using UnityEngine;
@@ -10,7 +11,7 @@ namespace _GAME.Scripts.Floor
     {
         public static FloorManager Instance { get; private set; }
 
-        [SerializeField] public List<Floor> floors = new List<Floor>();
+        [SerializeField] public  List<Floor>             floors        = new List<Floor>();
         [SerializeField] private List<Character> allCharacters = new List<Character>();
 
         private Floor currentFloor;

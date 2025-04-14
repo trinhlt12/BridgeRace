@@ -2,6 +2,7 @@ namespace _GAME.Scripts.Floor
 {
     using System;
     using System.Collections.Generic;
+    using _GAME.Scripts.Character;
     using _GAME.Scripts.FSM;
     using _GAME.Scripts.FSM.Brick;
     using UnityEngine;

@@ -5,6 +5,7 @@ using _GAME.Scripts.Floor;
 
 namespace _GAME.Scripts.FSM.Brick
 {
+    using _GAME.Scripts.Character;
     using Floor = _GAME.Scripts.Floor.Floor;
 
     public class BrickSpawner : MonoBehaviour

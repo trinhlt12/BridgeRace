@@ -1,5 +1,6 @@
 namespace _GAME.Scripts.FSM.PlayerStates
 {
+    using _GAME.Scripts.Character;
     using UnityEngine;
 
     public class PlayerIdleState : BaseState

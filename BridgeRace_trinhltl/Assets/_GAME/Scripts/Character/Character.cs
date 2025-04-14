@@ -1,7 +1,8 @@
-namespace _GAME.Scripts.FSM
+namespace _GAME.Scripts.Character
 {
     using System;
     using System.Collections.Generic;
+    using _GAME.Scripts.FSM;
     using _GAME.Scripts.FSM.Brick;
     using UnityEngine;
     using UnityEngine.Serialization;
@@ -17,7 +18,7 @@ namespace _GAME.Scripts.FSM
         [SerializeField]                     private Renderer           _renderer;
         public                                       int                BrickCount => this.brickStack.Count;
 
-        public readonly                             Stack<Brick.Brick> brickStack = new Stack<Brick.Brick>(); //stack of bricks
+        public readonly                             Stack<Brick> brickStack = new Stack<Brick>(); //stack of bricks
 
         //brick count
 
@@ -66,7 +67,7 @@ namespace _GAME.Scripts.FSM
 
         protected abstract void InitializeStates();
 
-        public virtual void PickUpBrick(Brick.Brick brick)
+        public virtual void PickUpBrick(Brick brick)
         {
             if (brick != null)
             {
@@ -74,7 +75,7 @@ namespace _GAME.Scripts.FSM
             }
         }
 
-        public virtual void placeBrick(Brick.Brick brick)
+        public virtual void placeBrick(Brick brick)
         {
             if (brick != null)
             {

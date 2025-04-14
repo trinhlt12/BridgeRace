@@ -1,6 +1,7 @@
 namespace _GAME.Scripts.Floor
 {
     using System;
+    using _GAME.Scripts.Character;
     using _GAME.Scripts.FSM;
     using UnityEngine;
 
