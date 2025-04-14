@@ -7,46 +7,54 @@ namespace _GAME.Scripts.FSM.Bridge
 
     public class BridgeStep : MonoBehaviour
     {
-        public BrickColor CurrentColor { get; private set; } = BrickColor.Grey;
-        public bool IsBuilt { get; private set; } = false;
+        public BrickColor CurrentColor  { get; private set; } = BrickColor.Grey;
+        public BrickColor PreviousColor { get; set; }
+        public bool       IsBuilt       { get; private set; } = false;
 
         [SerializeField] private Material defaultMaterial;
         [SerializeField] private Renderer renderer;
 
         private void Awake()
         {
-            if(this.defaultMaterial != null)
+            if (this.defaultMaterial != null)
             {
                 this.renderer.material = this.defaultMaterial;
             }
         }
-
-        public void BuildStep(BrickColor color)
-        {
-
-        }
-
         public void Reset()
         {
+            CurrentColor  = BrickColor.Grey;
+            PreviousColor = BrickColor.Grey;
 
+            if (this.defaultMaterial != null)
+            {
+                this.renderer.material = this.defaultMaterial;
+            }
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
             {
-                var player = other.GetComponent<PlayerController>();
-                var topBrick = player.GetTopBrick();
-
-                if(player.BrickCount <= 0) return;
-
+                var player      = other.GetComponent<PlayerController>();
+                var topBrick    = player.GetTopBrick();
                 var playerColor = player.characterColor;
-                var material = MaterialManager.Instance.GetMaterial(playerColor);
-                if (player.BrickCount > 0)
+
+                if (player.BrickCount <= 0 || CurrentColor == playerColor)
                 {
-                    this.renderer.material = material;
+                    return;
                 }
+
+                PreviousColor = CurrentColor;
+                CurrentColor  = playerColor;
+
+                var material = MaterialManager.Instance.GetMaterial(playerColor);
+
+                this.renderer.material = material;
+
                 other.GetComponent<PlayerController>().placeBrick(topBrick);
+
+                IsBuilt = true;
             }
         }
     }
