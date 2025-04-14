@@ -40,7 +40,6 @@ namespace _GAME.Scripts.FSM.Brick
             var pointsX = Mathf.FloorToInt(spawnPointBounds.size.x / spacingX);
             var pointsZ = Mathf.FloorToInt(spawnPointBounds.size.z / spacingZ);
 
-            // Đảm bảo có ít nhất một số lượng điểm tối thiểu
             pointsX = Mathf.Max(pointsX, 5);
             pointsZ = Mathf.Max(pointsZ, 5);
 

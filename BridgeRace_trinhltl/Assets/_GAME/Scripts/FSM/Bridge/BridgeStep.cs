@@ -9,7 +9,9 @@ namespace _GAME.Scripts.FSM.Bridge
     {
         public BrickColor CurrentColor  { get; private set; } = BrickColor.Grey;
         public BrickColor PreviousColor { get; set; }
+        /*
         public bool       IsBuilt       { get; private set; } = false;
+        */
 
         [SerializeField] private Material defaultMaterial;
         [SerializeField] private Renderer renderer;
@@ -54,7 +56,6 @@ namespace _GAME.Scripts.FSM.Bridge
 
                 other.GetComponent<PlayerController>().placeBrick(topBrick);
 
-                IsBuilt = true;
             }
         }
     }

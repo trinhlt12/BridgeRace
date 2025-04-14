@@ -82,7 +82,8 @@ namespace _GAME.Scripts.FSM
                 {
                     this.brickStack.Pop();
                     brick.transform.SetParent(null);
-                    brick.ReturnToPool();
+                    BrickSpawner.Instance.RemoveBrick(brick);
+                    BrickSpawner.Instance.RespawnBrick(brick);
                 }
             }
         }

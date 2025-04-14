@@ -4,17 +4,51 @@ using UnityEngine;
 
 namespace _GAME.Scripts.FSM.Brick
 {
+    internal class Vector3Comparer : IEqualityComparer<Vector3>
+    {
+        public bool Equals(Vector3 a, Vector3 b)
+        {
+            // Consider positions equal if they are very close
+            return Vector3.Distance(a, b) < 0.1f;
+        }
+
+        public int GetHashCode(Vector3 position)
+        {
+            // Create a reasonable hash code for Vector3
+            return Mathf.RoundToInt(position.x * 100) ^ Mathf.RoundToInt(position.y * 100) << 2 ^ Mathf.RoundToInt(position.z * 100) << 4;
+        }
+    }
+
     public class BrickSpawner : MonoBehaviour
     {
         [SerializeField] private SpawnPointGenerator _spawnPointGenerator;
-        [SerializeField] private int maxBricksPerColor = 25;
-        [SerializeField] private int bricksToSpawnPerBatch = 5;
-        [SerializeField] private int minBricksPerColor = 5;
+        [SerializeField] private int                 maxBricksPerColor     = 25;
+        [SerializeField] private int                 bricksToSpawnPerBatch = 5;
+        [SerializeField] private int                 minBricksPerColor     = 5;
 
-        private BrickPoolManager _brickPoolManager;
-        private Dictionary<BrickColor, List<Brick>> _activeBricks = new Dictionary<BrickColor, List<Brick>>();
+        public static BrickSpawner Instance { get; private set; }
+
+        private BrickPoolManager                    _brickPoolManager;
+        private Dictionary<BrickColor, List<Brick>> _activeBricks      = new Dictionary<BrickColor, List<Brick>>();
+        private HashSet<Vector3>                    _occupiedPositions = new HashSet<Vector3>(new Vector3Comparer());
 
         private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(this);
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            this.OnInit();
+        }
+
+        private void OnInit()
         {
             foreach (var color in Enum.GetValues(typeof(BrickColor)))
             {
@@ -35,17 +69,21 @@ namespace _GAME.Scripts.FSM.Brick
             SpawnAllBricks();
         }
 
+        public bool IsPositionOccupied(Vector3 position)
+        {
+            return _occupiedPositions.Contains(position);
+        }
+
         public void SpawnAllBricks()
         {
-            var allPoints = _spawnPointGenerator.GetSpawnPoints();
+            var allPoints   = _spawnPointGenerator.GetSpawnPoints();
             var totalColors = Enum.GetValues(typeof(BrickColor)).Length;
 
             Debug.Log($"Total spawn points: {allPoints.Count}, Total colors: {totalColors}");
 
             if (allPoints.Count < totalColors * minBricksPerColor)
             {
-                Debug.LogWarning($"Not enough spawn points ({allPoints.Count}) for all colors ({totalColors}). " +
-                    $"Consider reducing spacing or increasing spawn area size!");
+                Debug.LogWarning($"Not enough spawn points ({allPoints.Count}) for all colors ({totalColors}). " + $"Consider reducing spacing or increasing spawn area size!");
             }
 
             var spawnPointsPerColor = AllocateSpawnPointsPerColor();
@@ -67,7 +105,7 @@ namespace _GAME.Scripts.FSM.Brick
 
         private Dictionary<BrickColor, List<Vector3>> AllocateSpawnPointsPerColor()
         {
-            var result = new Dictionary<BrickColor, List<Vector3>>();
+            var result             = new Dictionary<BrickColor, List<Vector3>>();
             var allAvailablePoints = new List<Vector3>(_spawnPointGenerator.GetSpawnPoints());
 
             var colorCount = Enum.GetValues(typeof(BrickColor)).Length - 1; // Exclude Grey
@@ -84,7 +122,7 @@ namespace _GAME.Scripts.FSM.Brick
             }
 
             var colorIndex = 0;
-            var colors = (BrickColor[])Enum.GetValues(typeof(BrickColor));
+            var colors     = (BrickColor[])Enum.GetValues(typeof(BrickColor));
 
             while (allAvailablePoints.Count > 0 && colorIndex < colorCount)
             {
@@ -117,6 +155,10 @@ namespace _GAME.Scripts.FSM.Brick
 
             foreach (var point in points)
             {
+                if (IsPositionOccupied(point))
+                {
+                    return;
+                }
                 var brick = _brickPoolManager.SpawnBrick(color, point + Vector3.down * 0.15f);
                 if (brick != null)
                 {
@@ -126,7 +168,7 @@ namespace _GAME.Scripts.FSM.Brick
             }
         }
 
-        private void SpawnBricksOfColor(BrickColor color, int count)
+        /*private void SpawnBricksOfColor(BrickColor color, int count)
         {
             if (_brickPoolManager == null)
             {
@@ -164,29 +206,7 @@ namespace _GAME.Scripts.FSM.Brick
                     _activeBricks[color].Add(brick);
                 }
             }
-        }
-
-        public void RespawnBricks()
-        {
-            var spawnPointsPerColor = AllocateSpawnPointsPerColor();
-
-            foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
-            {
-                if (spawnPointsPerColor.ContainsKey(color) && spawnPointsPerColor[color].Count > 0)
-                {
-                    int spawnCount = Mathf.Min(spawnPointsPerColor[color].Count,
-                                               maxBricksPerColor - _activeBricks[color].Count);
-
-                    if (spawnCount > 0)
-                    {
-                        List<Vector3> pointsToUse = spawnPointsPerColor[color].GetRange(0, spawnCount);
-                        SpawnBricksOfColorAtPoints(color, pointsToUse);
-                    }
-                }
-            }
-
-            LogActiveBrickCounts();
-        }
+        }*/
 
         private void LogActiveBrickCounts()
         {
@@ -203,8 +223,56 @@ namespace _GAME.Scripts.FSM.Brick
             if (_activeBricks.ContainsKey(brick.Color))
             {
                 _activeBricks[brick.Color].Remove(brick);
+                _occupiedPositions.Remove(brick.transform.position);
             }
             brick.ReturnToPool();
+        }
+
+        private Vector3 FindEmptySpawnPoint()
+        {
+            var allSpawnPoints       = _spawnPointGenerator.GetSpawnPoints();
+            var availableSpawnPoints = new List<Vector3>();
+
+            foreach (var point in allSpawnPoints)
+            {
+                if (!IsPositionOccupied(point))
+                {
+                    availableSpawnPoints.Add(point);
+                }
+            }
+
+            if (availableSpawnPoints.Count > 0)
+            {
+                var randomIndex = UnityEngine.Random.Range(0, availableSpawnPoints.Count);
+                return availableSpawnPoints[randomIndex];
+            }
+
+            return Vector3.zero; // No available spawn points
+        }
+
+        public void RespawnBrick(Brick brick)
+        {
+            if (_activeBricks.ContainsKey(brick.Color))
+            {
+                _activeBricks[brick.Color].Remove(brick);
+                _occupiedPositions.Remove(brick.transform.position);
+            }
+
+            brick.gameObject.GetComponent<Collider>().enabled = true;
+
+            var newPosition = FindEmptySpawnPoint();
+
+            if (newPosition != Vector3.zero)
+            {
+                brick.transform.position = newPosition;
+                this._occupiedPositions.Add(newPosition);
+                this._activeBricks[brick.Color].Add(brick);
+                brick.gameObject.SetActive(true);
+            }
+            else
+            {
+                brick.ReturnToPool();
+            }
         }
     }
 }
