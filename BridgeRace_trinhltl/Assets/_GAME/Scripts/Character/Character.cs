@@ -15,7 +15,6 @@ namespace _GAME.Scripts.Character
         public BrickColor characterColor;
         public float      moveSpeed     = 5f;
         public float      rotationSpeed = 10f;
-        public Rigidbody  rb;
 
         public                                       Animator           animator;
         [SerializeField]                     private Renderer           _renderer;
@@ -31,8 +30,6 @@ namespace _GAME.Scripts.Character
             {
                 this._stateMachine = GetComponent<StateMachine>();
             }
-
-            this.rb = this.gameObject.GetComponent<Rigidbody>();
 
             if (animator == null)
             {

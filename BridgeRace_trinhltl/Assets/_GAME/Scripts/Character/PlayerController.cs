@@ -10,6 +10,7 @@ namespace _GAME.Scripts.Character
     public class PlayerController : Character
     {
         [SerializeField] private FloatingJoystick joystick;
+        public                   Rigidbody        rb;
 
         protected override void OnInit()
         {

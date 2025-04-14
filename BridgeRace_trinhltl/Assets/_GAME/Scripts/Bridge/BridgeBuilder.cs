@@ -21,12 +21,14 @@ namespace _GAME.Scripts.FSM.Bridge
 
         [Header("Bridge Properties")] [SerializeField] private float          bridgeWidth = 2f;
         [SerializeField]                               private Transform      bridgeTransform;
-        [SerializeField]                               private NavMeshSurface navMesh;
+        private NavMeshSurface navMesh;
 
         private List<GameObject> bridgeSteps = new List<GameObject>();
 
         private void Awake()
         {
+            navMesh = FindObjectOfType<NavMeshSurface>();
+
             stepLength = bridgeStepPrefab.GetComponent<BoxCollider>().size.z;
             stepHeight = bridgeStepPrefab.GetComponent<BoxCollider>().size.y;
         }

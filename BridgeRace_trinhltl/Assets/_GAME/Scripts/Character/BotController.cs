@@ -14,6 +14,11 @@ namespace _GAME.Scripts.Character
         {
             base.OnInit();
 
+            /*var settings = NavMesh.GetSettingsByID(0);
+
+            settings.agentSlope = 60f;
+            settings.agentClimb = 0.5f;*/
+
             this.navMeshAgent.speed        = this.moveSpeed;
             this.navMeshAgent.angularSpeed = this.rotationSpeed * 10f;
 
