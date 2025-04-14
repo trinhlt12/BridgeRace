@@ -14,7 +14,7 @@ namespace _GAME.Scripts.FSM.Brick
         public static            BrickSpawner        Instance { get; private set; }
 
         private BrickPoolManager                    _brickPoolManager;
-        private Dictionary<BrickColor, List<Brick>> _activeBricks           = new Dictionary<BrickColor, List<Brick>>();
+        public Dictionary<BrickColor, List<Brick>> _activeBricks           = new Dictionary<BrickColor, List<Brick>>();
         private Dictionary<Brick, int>              _brickToSpawnPointIndex = new Dictionary<Brick, int>();
 
         private void Awake()
@@ -52,6 +52,7 @@ namespace _GAME.Scripts.FSM.Brick
             _brickPoolManager = BrickPoolManager.Instance;
 
             SpawnAllBricks();
+
         }
 
         public void SpawnAllBricks()
@@ -156,45 +157,32 @@ namespace _GAME.Scripts.FSM.Brick
             }
         }
 
-        /*private void SpawnBricksOfColor(BrickColor color, int count)
+        public void ActivateAllBricks(bool enabled)
         {
-            if (_brickPoolManager == null)
-            {
-                Debug.LogError("_brickPoolManager is null in SpawnBricksOfColor");
-                return;
-            }
+            if(enabled == true) return;
 
-            if (_spawnPointGenerator == null)
-            {
-                Debug.LogError("_spawnPointGenerator is null in SpawnBricksOfColor");
-                return;
-            }
+            // Create a copy of all active bricks to avoid collection modification errors
+            var bricksCopy = new Dictionary<BrickColor, List<Brick>>();
 
-            _spawnPointGenerator.RefreshAvailableSpawnPoints();
-
-            var spawnPoints = _spawnPointGenerator.GetRandomSpawnPoints(count);
-            Debug.Log($"Spawning {spawnPoints.Count} bricks of color {color}");
-
-            Material brickMaterial = null;
-            if (MaterialManager.Instance != null)
+            foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
             {
-                brickMaterial = MaterialManager.Instance.GetMaterial(color);
-            }
-            else
-            {
-                Debug.LogWarning("MaterialManager.Instance is null");
-            }
-
-            foreach (var spawnPoint in spawnPoints)
-            {
-                var brick = _brickPoolManager.SpawnBrick(color, spawnPoint + Vector3.down * 0.15f);
-                if (brick != null)
+                if (this._activeBricks.TryGetValue(color, out var brick))
                 {
-                    brick.Initialize(color, brickMaterial);
-                    _activeBricks[color].Add(brick);
+                    bricksCopy[color] = new List<Brick>(brick);
                 }
             }
-        }*/
+
+            foreach (var colorBrickPair in bricksCopy)
+            {
+                foreach (var brick in colorBrickPair.Value)
+                {
+                    RemoveBrick(brick);
+                }
+            }
+
+            LogActiveBrickCounts();
+            Debug.Log("All bricks have been deactivated");
+        }
 
         private void LogActiveBrickCounts()
         {
