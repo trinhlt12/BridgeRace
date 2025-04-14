@@ -66,7 +66,7 @@ namespace _GAME.Scripts.FSM
 
         protected abstract void InitializeStates();
 
-        public virtual void pickUpBrick(Brick.Brick brick)
+        public virtual void PickUpBrick(Brick.Brick brick)
         {
             if (brick != null)
             {

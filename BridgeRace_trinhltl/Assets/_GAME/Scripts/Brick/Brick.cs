@@ -1,7 +1,7 @@
 namespace _GAME.Scripts.FSM.Brick
 {
     using System;
-    using _GAME.Scripts.Player;
+    using _GAME.Scripts.Character;
     using UnityEngine;
 
     public enum BrickColor
@@ -44,7 +44,7 @@ namespace _GAME.Scripts.FSM.Brick
                 var characterColor = other.GetComponent<Character>().characterColor;
                 if (this.Color == characterColor)
                 {
-                    other.GetComponent<PlayerController>().pickUpBrick(this);
+                    other.GetComponent<PlayerController>().PickUpBrick(this);
                 }
             }
         }

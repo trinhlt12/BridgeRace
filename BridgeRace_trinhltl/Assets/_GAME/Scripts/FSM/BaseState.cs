@@ -1,6 +1,6 @@
 namespace _GAME.Scripts.FSM
 {
-    using _GAME.Scripts.Player;
+    using _GAME.Scripts.Character;
     using UnityEngine;
 
     public class BaseState : IState

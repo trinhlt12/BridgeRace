@@ -1,4 +1,4 @@
-namespace _GAME.Scripts.Player
+namespace _GAME.Scripts.Character
 {
     using System;
     using System.Collections.Generic;
@@ -53,9 +53,9 @@ namespace _GAME.Scripts.Player
             return new Vector2(joystick.Horizontal, joystick.Vertical);
         }
 
-        public override void pickUpBrick(Brick brick)
+        public override void PickUpBrick(Brick brick)
         {
-            base.pickUpBrick(brick);
+            base.PickUpBrick(brick);
 
             brick.transform.SetParent(BrickHolder);
             brick.transform.localPosition = Vector3.zero;
@@ -63,14 +63,12 @@ namespace _GAME.Scripts.Player
 
             var brickCollider = brick.GetComponent<BoxCollider>();
             var brickHeight  = brickCollider.bounds.size.y;
+            brickCollider.enabled = false;
 
-            brick.gameObject.GetComponent<Collider>().enabled = false;
 
             var brickVisual = brick.transform.GetChild(0);
 
-            var vector3     = brickVisual.position;
-            vector3.y            = this.brickStack.Count * brickHeight;
-            brickVisual.position = vector3;
+            brickVisual.localPosition = new Vector3(0, this.brickStack.Count * brickHeight, 0);
         }
 
         public override void placeBrick(Brick brick)

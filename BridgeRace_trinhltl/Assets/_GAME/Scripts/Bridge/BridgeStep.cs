@@ -2,7 +2,7 @@ namespace _GAME.Scripts.FSM.Bridge
 {
     using System;
     using _GAME.Scripts.FSM.Brick;
-    using _GAME.Scripts.Player;
+    using _GAME.Scripts.Character;
     using UnityEngine;
 
     public class BridgeStep : MonoBehaviour
