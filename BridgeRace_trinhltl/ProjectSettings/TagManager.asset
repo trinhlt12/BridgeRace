@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Brick
   - Bridge
+  - Gate
   layers:
   - Default
   - TransparentFX

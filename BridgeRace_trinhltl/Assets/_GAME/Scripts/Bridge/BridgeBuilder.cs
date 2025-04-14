@@ -9,22 +9,19 @@ namespace _GAME.Scripts.FSM.Bridge
 
     public class BridgeBuilder : MonoBehaviour
     {
-        [Header(("Spline Settings"))]
-        [SerializeField] private SplineContainer splineContainer;
+        [Header(("Spline Settings"))] [SerializeField] private SplineContainer splineContainer;
 
         [SerializeField] private int splineIndex = 0;
 
-        [Header("Step Settings")]
-        [SerializeField] private GameObject bridgeStepPrefab;
-        [SerializeField] private Material defaultMaterial;
-        [SerializeField] private float maxDistanceBetweenSteps = 0.2f;
-        private float stepLength;
-        private float stepHeight;
+        [Header("Step Settings")] [SerializeField] private GameObject bridgeStepPrefab;
+        [SerializeField]                           private Material   defaultMaterial;
+        [SerializeField]                           private float      maxDistanceBetweenSteps = 0.2f;
+        private                                            float      stepLength;
+        private                                            float      stepHeight;
 
-        [Header("Bridge Properties")]
-        [SerializeField] private float bridgeWidth = 2f;
-        [SerializeField] private Transform bridgeTransform;
-        [SerializeField] private NavMeshSurface navMesh;
+        [Header("Bridge Properties")] [SerializeField] private float          bridgeWidth = 2f;
+        [SerializeField]                               private Transform      bridgeTransform;
+        [SerializeField]                               private NavMeshSurface navMesh;
 
         private List<GameObject> bridgeSteps = new List<GameObject>();
 
@@ -41,7 +38,7 @@ namespace _GAME.Scripts.FSM.Bridge
 
         private void BuildBridge()
         {
-            if(this.splineContainer == null || this.bridgeStepPrefab == null)
+            if (this.splineContainer == null || this.bridgeStepPrefab == null)
             {
                 Debug.LogError("SplineContainer or BridgeStepPrefab is not assigned.");
                 return;
@@ -49,8 +46,8 @@ namespace _GAME.Scripts.FSM.Bridge
 
             ClearExistingBridge();
 
-            var spline = this.splineContainer.Splines[splineIndex];
-            var splineLength = spline.GetLength();
+            var spline        = this.splineContainer.Splines[splineIndex];
+            var splineLength  = spline.GetLength();
             var numberOfSteps = Mathf.CeilToInt(splineLength / this.maxDistanceBetweenSteps) + 1;
 
             for (var i = 0; i < numberOfSteps; i++)
@@ -64,7 +61,7 @@ namespace _GAME.Scripts.FSM.Bridge
                 bridgeSteps.Add(step);
             }
 
-            if (this.navMesh != null)
+            if (Application.isPlaying && this.navMesh != null)
             {
                 this.navMesh.BuildNavMesh();
             }
@@ -105,16 +102,33 @@ namespace _GAME.Scripts.FSM.Bridge
             {
                 if (step != null)
                 {
-                    DestroyImmediate(step);
+                    #if UNITY_EDITOR
+                    if (!Application.isPlaying)
+                        DestroyImmediate(step);
+                    else
+                        Destroy(step);
+                    #else
+                        Destroy(step);
+                    #endif
                 }
             }
 
             bridgeSteps.Clear();
         }
 
+        #if UNITY_EDITOR
         public void RebuildInEditor()
         {
+            if (stepLength == 0f || stepHeight == 0f)
+            {
+                stepLength = bridgeStepPrefab.GetComponent<BoxCollider>().size.z;
+                stepHeight = bridgeStepPrefab.GetComponent<BoxCollider>().size.y;
+            }
+
             BuildBridge();
+
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(gameObject.scene);
         }
+        #endif
     }
 }
