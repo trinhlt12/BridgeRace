@@ -18,6 +18,7 @@ namespace _GAME.Scripts.FSM.Brick
 
         private List<Vector3> spawnPoints = new List<Vector3>();
         private List<Vector3> availableSpawnPoints = new List<Vector3>();
+        public bool[] _spawnPointAvailability;
 
         private void Awake()
         {
@@ -66,6 +67,7 @@ namespace _GAME.Scripts.FSM.Brick
                         var spawnPoint = hit.position + Vector3.up * 0.1f;
                         spawnPoints.Add(spawnPoint);
                         Debug.DrawLine(pointPosition, spawnPoint, Color.green, 10f);
+
                     }
                     else
                     {
@@ -74,9 +76,35 @@ namespace _GAME.Scripts.FSM.Brick
                 }
             }
 
+            _spawnPointAvailability = new bool[spawnPoints.Count];
+            for (var i = 0; i < this.spawnPoints.Count; i++)
+            {
+                _spawnPointAvailability[i] = true;
+            }
+
             Debug.Log($"Generated {spawnPoints.Count} spawn points with spacing ({spacingX}, {spacingZ})");
 
             RefreshAvailableSpawnPoints();
+        }
+
+        public void SetSpawnPointAvailability(int index, bool isAvailable)
+        {
+            if (index >= 0 && index < this._spawnPointAvailability.Length)
+            {
+                _spawnPointAvailability[index] = isAvailable;
+            }
+        }
+
+        public int GetSpawnPointIndex(Vector3 position)
+        {
+            for(var i = 0; i < spawnPoints.Count; i++)
+            {
+                if (Vector3.Distance(spawnPoints[i], position) < 0.1f)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         public void RefreshAvailableSpawnPoints()
@@ -92,26 +120,32 @@ namespace _GAME.Scripts.FSM.Brick
 
         public List<Vector3> GetRandomSpawnPoints(int count)
         {
-            if (availableSpawnPoints.Count == 0)
+            var availableIndices = new List<int>();
+
+            for (var i = 0; i < _spawnPointAvailability.Length; i++)
             {
-                RefreshAvailableSpawnPoints();
-                Debug.Log("Refreshed available spawn points pool");
+                if (_spawnPointAvailability[i])
+                {
+                    availableIndices.Add(i);
+                }
             }
 
-            count = Mathf.Min(count, availableSpawnPoints.Count);
-
             var points = new List<Vector3>();
+            count = Mathf.Min(count, availableIndices.Count);
 
             for (var i = 0; i < count; i++)
             {
-                if (availableSpawnPoints.Count == 0) break;
+                if (availableIndices.Count == 0) break;
 
-                var randomIndex = Random.Range(0, availableSpawnPoints.Count);
-                points.Add(availableSpawnPoints[randomIndex]);
-                availableSpawnPoints.RemoveAt(randomIndex);
+                var randomIndexPosition = Random.Range(0, availableIndices.Count);
+                var spawnPointIndex     = availableIndices[randomIndexPosition];
+
+                points.Add(spawnPoints[spawnPointIndex]);
+                _spawnPointAvailability[spawnPointIndex] = false;
+                availableIndices.RemoveAt(randomIndexPosition);
             }
 
-            Debug.Log($"Retrieved {points.Count} random spawn points, {availableSpawnPoints.Count} remaining");
+            Debug.Log($"Retrieved {points.Count} random spawn points, {availableIndices.Count} remaining available");
             return points;
         }
 

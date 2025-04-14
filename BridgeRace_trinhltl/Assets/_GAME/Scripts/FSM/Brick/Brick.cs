@@ -37,8 +37,6 @@ namespace _GAME.Scripts.FSM.Brick
             BrickPoolManager.Instance.ReturnBrick(this, Color);
         }
 
-
-
         private void OnTriggerEnter(Collider other)
         {
             if(other.CompareTag("Player"))

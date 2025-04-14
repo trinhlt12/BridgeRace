@@ -684,6 +684,7 @@ MonoBehaviour:
   maxBricksPerColor: 25
   bricksToSpawnPerBatch: 5
   minBricksPerColor: 5
+  _brickParent: {fileID: 1494200942}
 --- !u!4 &671451502
 Transform:
   m_ObjectHideFlags: 0
@@ -976,6 +977,7 @@ MonoBehaviour:
   visualizePoints: 1
   spacingX: 1.5
   spacingZ: 1.5
+  _spawnPointAvailability: 
 --- !u!4 &786789850
 Transform:
   m_ObjectHideFlags: 0

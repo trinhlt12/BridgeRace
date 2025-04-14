@@ -14,8 +14,6 @@ namespace _GAME.Scripts.Player
         public                   float            moveSpeed     = 5f;
         public                   float            rotationSpeed = 10f;
 
-        private List<Brick> _pickedBricks = new List<Brick>();
-
         protected override void Awake()
         {
             base.Awake();
@@ -58,7 +56,6 @@ namespace _GAME.Scripts.Player
         public override void pickUpBrick(Brick brick)
         {
             base.pickUpBrick(brick);
-            _pickedBricks.Add(brick);
 
             brick.transform.SetParent(BrickHolder);
             brick.transform.localPosition = Vector3.zero;
@@ -72,7 +69,7 @@ namespace _GAME.Scripts.Player
             var brickVisual = brick.transform.GetChild(0);
 
             var vector3     = brickVisual.position;
-            vector3.y            = this._pickedBricks.Count * brickHeight;
+            vector3.y            = this.brickStack.Count * brickHeight;
             brickVisual.position = vector3;
         }
 

@@ -4,33 +4,18 @@ using UnityEngine;
 
 namespace _GAME.Scripts.FSM.Brick
 {
-    internal class Vector3Comparer : IEqualityComparer<Vector3>
-    {
-        public bool Equals(Vector3 a, Vector3 b)
-        {
-            // Consider positions equal if they are very close
-            return Vector3.Distance(a, b) < 0.1f;
-        }
-
-        public int GetHashCode(Vector3 position)
-        {
-            // Create a reasonable hash code for Vector3
-            return Mathf.RoundToInt(position.x * 100) ^ Mathf.RoundToInt(position.y * 100) << 2 ^ Mathf.RoundToInt(position.z * 100) << 4;
-        }
-    }
-
     public class BrickSpawner : MonoBehaviour
     {
         [SerializeField] private SpawnPointGenerator _spawnPointGenerator;
         [SerializeField] private int                 maxBricksPerColor     = 25;
         [SerializeField] private int                 bricksToSpawnPerBatch = 5;
         [SerializeField] private int                 minBricksPerColor     = 5;
-
-        public static BrickSpawner Instance { get; private set; }
+        [SerializeField] private Transform           _brickParent;
+        public static            BrickSpawner        Instance { get; private set; }
 
         private BrickPoolManager                    _brickPoolManager;
-        private Dictionary<BrickColor, List<Brick>> _activeBricks      = new Dictionary<BrickColor, List<Brick>>();
-        private HashSet<Vector3>                    _occupiedPositions = new HashSet<Vector3>(new Vector3Comparer());
+        private Dictionary<BrickColor, List<Brick>> _activeBricks           = new Dictionary<BrickColor, List<Brick>>();
+        private Dictionary<Brick, int>              _brickToSpawnPointIndex = new Dictionary<Brick, int>();
 
         private void Awake()
         {
@@ -67,11 +52,6 @@ namespace _GAME.Scripts.FSM.Brick
             _brickPoolManager = BrickPoolManager.Instance;
 
             SpawnAllBricks();
-        }
-
-        public bool IsPositionOccupied(Vector3 position)
-        {
-            return _occupiedPositions.Contains(position);
         }
 
         public void SpawnAllBricks()
@@ -155,15 +135,23 @@ namespace _GAME.Scripts.FSM.Brick
 
             foreach (var point in points)
             {
-                if (IsPositionOccupied(point))
+                var spawnPointIndex = _spawnPointGenerator.GetSpawnPointIndex(point);
+
+                if (spawnPointIndex == -1 || !this._spawnPointGenerator._spawnPointAvailability[spawnPointIndex])
                 {
-                    return;
+                    continue;
                 }
+
                 var brick = _brickPoolManager.SpawnBrick(color, point + Vector3.down * 0.15f);
+
                 if (brick != null)
                 {
                     brick.Initialize(color, brickMaterial);
+
                     _activeBricks[color].Add(brick);
+
+                    this._brickToSpawnPointIndex[brick] = spawnPointIndex;
+                    this._spawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, false);
                 }
             }
         }
@@ -220,54 +208,58 @@ namespace _GAME.Scripts.FSM.Brick
 
         public void RemoveBrick(Brick brick)
         {
+            if (brick == null) return;
+
             if (_activeBricks.ContainsKey(brick.Color))
             {
                 _activeBricks[brick.Color].Remove(brick);
-                _occupiedPositions.Remove(brick.transform.position);
+                if (this._brickToSpawnPointIndex.ContainsKey(brick))
+                {
+                    var spawnPointIndex = this._brickToSpawnPointIndex[brick];
+                    this._spawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
+                    this._brickToSpawnPointIndex.Remove(brick);
+                }
+            }
+
+            if (_brickToSpawnPointIndex.ContainsKey(brick))
+            {
+                int spawnPointIndex = _brickToSpawnPointIndex[brick];
+                Debug.Log($"Freeing spawn point {spawnPointIndex}");
+                _spawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
+                _brickToSpawnPointIndex.Remove(brick);
             }
             brick.ReturnToPool();
         }
 
-        private Vector3 FindEmptySpawnPoint()
-        {
-            var allSpawnPoints       = _spawnPointGenerator.GetSpawnPoints();
-            var availableSpawnPoints = new List<Vector3>();
-
-            foreach (var point in allSpawnPoints)
-            {
-                if (!IsPositionOccupied(point))
-                {
-                    availableSpawnPoints.Add(point);
-                }
-            }
-
-            if (availableSpawnPoints.Count > 0)
-            {
-                var randomIndex = UnityEngine.Random.Range(0, availableSpawnPoints.Count);
-                return availableSpawnPoints[randomIndex];
-            }
-
-            return Vector3.zero; // No available spawn points
-        }
-
         public void RespawnBrick(Brick brick)
         {
-            if (_activeBricks.ContainsKey(brick.Color))
+            if (brick == null) return;
+
+            RemoveBrick(brick);
+
+            var newPoints = _spawnPointGenerator.GetRandomSpawnPoints(1);
+            if (newPoints.Count > 0)
             {
-                _activeBricks[brick.Color].Remove(brick);
-                _occupiedPositions.Remove(brick.transform.position);
-            }
+                var newPosition        = newPoints[0];
+                var newSpawnPointIndex = _spawnPointGenerator.GetSpawnPointIndex(newPosition);
 
-            brick.gameObject.GetComponent<Collider>().enabled = true;
+                brick.transform.position                          = newPosition + Vector3.down * 0.15f;
 
-            var newPosition = FindEmptySpawnPoint();
-
-            if (newPosition != Vector3.zero)
-            {
-                brick.transform.position = newPosition;
-                this._occupiedPositions.Add(newPosition);
-                this._activeBricks[brick.Color].Add(brick);
+                brick.transform.SetParent(_brickParent);
+                brick.transform.localRotation                     = Quaternion.identity;
+                var brickVisual = brick.transform.GetChild(0);
+                if(brickVisual != null)
+                {
+                    brickVisual.localRotation = Quaternion.identity;
+                    brickVisual.localPosition = Vector3.zero;
+                }
+                brick.gameObject.GetComponent<Collider>().enabled = true;
                 brick.gameObject.SetActive(true);
+
+                this._activeBricks[brick.Color].Add(brick);
+
+                _brickToSpawnPointIndex[brick] = newSpawnPointIndex;
+                _spawnPointGenerator.SetSpawnPointAvailability(newSpawnPointIndex, false);
             }
             else
             {
