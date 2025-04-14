@@ -14,12 +14,22 @@ namespace _GAME.Scripts.Floor
         public void Activate(bool activate)
         {
             this._isActive = activate;
+
+            if (activate)
+            {
+                SpawnBricksForCharactersOnFloor();
+            }
+
             BrickSpawner.Instance.ActivateAllBricks(activate);
         }
 
-        private void SpawnBricksOnFloor()
+        private void SpawnBricksForCharactersOnFloor()
         {
-
+            if (BrickSpawner.Instance != null && this._isActive)
+            {
+                BrickSpawner.Instance.SetCurrentFloor(this);
+                BrickSpawner.Instance.SpawnBricksForCharacters(this.charactersOnFloor);
+            }
         }
 
         public void RegisterCharacter(Character character)
@@ -27,6 +37,10 @@ namespace _GAME.Scripts.Floor
             if (!charactersOnFloor.Contains(character))
             {
                 charactersOnFloor.Add(character);
+                if (this._isActive)
+                {
+                    this.SpawnBricksForCharactersOnFloor();
+                }
             }
         }
 
@@ -35,6 +49,11 @@ namespace _GAME.Scripts.Floor
             if (charactersOnFloor.Contains(character))
             {
                 charactersOnFloor.Remove(character);
+
+                if (this._isActive)
+                {
+                    this.SpawnBricksForCharactersOnFloor();
+                }
             }
 
             if (charactersOnFloor.Count == 0 && !FloorManager.Instance.IsCurrentFloor(this))

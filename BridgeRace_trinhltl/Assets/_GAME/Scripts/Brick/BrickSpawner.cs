@@ -1,20 +1,27 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using _GAME.Scripts.Floor;
 
 namespace _GAME.Scripts.FSM.Brick
 {
+    using Floor = _GAME.Scripts.Floor.Floor;
+
     public class BrickSpawner : MonoBehaviour
     {
         [SerializeField] private SpawnPointGenerator _spawnPointGenerator;
-        [SerializeField] private int                 maxBricksPerColor     = 25;
-        [SerializeField] private int                 minBricksPerColor     = 5;
-        [SerializeField] private Transform           _brickParent;
-        public static            BrickSpawner        Instance { get; private set; }
+        [SerializeField] private int maxBricksPerColor = 25;
+        [SerializeField] private int bricksToSpawnPerBatch = 5;
+        [SerializeField] private int minBricksPerColor = 5;
+        [SerializeField] private Transform _brickParent;
+        public static BrickSpawner Instance { get; private set; }
 
-        private BrickPoolManager                    _brickPoolManager;
-        public Dictionary<BrickColor, List<Brick>> _activeBricks           = new Dictionary<BrickColor, List<Brick>>();
-        private Dictionary<Brick, int>              _brickToSpawnPointIndex = new Dictionary<Brick, int>();
+        private BrickPoolManager _brickPoolManager;
+        private Floor _currentFloor;
+
+        public Dictionary<BrickColor, List<Brick>> _activeBricks = new Dictionary<BrickColor, List<Brick>>();
+
+        private Dictionary<Brick, int> _brickToSpawnPointIndex = new Dictionary<Brick, int>();
 
         private void Awake()
         {
@@ -49,73 +56,81 @@ namespace _GAME.Scripts.FSM.Brick
             }
 
             _brickPoolManager = BrickPoolManager.Instance;
-
-            SpawnAllBricks();
-
         }
 
-        public void SpawnAllBricks()
+        public void SetCurrentFloor(Floor floor)
         {
-            var allPoints   = _spawnPointGenerator.GetSpawnPoints();
-            var totalColors = Enum.GetValues(typeof(BrickColor)).Length;
+            _currentFloor = floor;
+        }
 
-            Debug.Log($"Total spawn points: {allPoints.Count}, Total colors: {totalColors}");
+        public void SpawnBricksForCharacters(List<Character> characters)
+        {
+            ClearAllBricks();
 
-            if (allPoints.Count < totalColors * minBricksPerColor)
+            var colorsToSpawn = new HashSet<BrickColor>();
+            foreach (var character in characters)
             {
-                Debug.LogWarning($"Not enough spawn points ({allPoints.Count}) for all colors ({totalColors}). " + $"Consider reducing spacing or increasing spawn area size!");
+                if (!character.characterColor.Equals(BrickColor.Grey))
+                {
+                    colorsToSpawn.Add(character.characterColor);
+                }
             }
 
-            var spawnPointsPerColor = AllocateSpawnPointsPerColor();
-
-            foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
+            if (colorsToSpawn.Count == 0)
             {
-                if (spawnPointsPerColor.ContainsKey(color) && spawnPointsPerColor[color].Count > 0)
-                {
-                    if (color.Equals(BrickColor.Grey))
-                    {
-                        continue; // Skip spawning grey bricks
-                    }
-                    SpawnBricksOfColorAtPoints(color, spawnPointsPerColor[color]);
-                }
+                Debug.Log("No characters with valid colors on floor, skipping brick spawn");
+                return;
+            }
+
+            var spawnPointsPerColor = AllocateSpawnPointsForColors(colorsToSpawn);
+
+            foreach (var colorEntry in spawnPointsPerColor)
+            {
+                SpawnBricksOfColorAtPoints(colorEntry.Key, colorEntry.Value);
             }
 
             LogActiveBrickCounts();
         }
 
-        private Dictionary<BrickColor, List<Vector3>> AllocateSpawnPointsPerColor()
+        private Dictionary<BrickColor, List<Vector3>> AllocateSpawnPointsForColors(HashSet<BrickColor> colors)
         {
-            var result             = new Dictionary<BrickColor, List<Vector3>>();
+            var result = new Dictionary<BrickColor, List<Vector3>>();
             var allAvailablePoints = new List<Vector3>(_spawnPointGenerator.GetSpawnPoints());
 
-            var colorCount = Enum.GetValues(typeof(BrickColor)).Length - 1; // Exclude Grey
+            if (colors.Count == 0)
+                return result;
 
-            var pointsPerColor = Mathf.Max(minBricksPerColor, allAvailablePoints.Count / colorCount);
+            var pointsPerColor = Mathf.Max(minBricksPerColor, allAvailablePoints.Count / colors.Count);
+            pointsPerColor = Mathf.Min(pointsPerColor, maxBricksPerColor);
 
-            foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
+            foreach (var color in colors)
             {
-                if (color.Equals(BrickColor.Grey))
-                {
-                    continue;
-                }
                 result[color] = new List<Vector3>();
             }
 
+            var colorList = new List<BrickColor>(colors);
             var colorIndex = 0;
-            var colors     = (BrickColor[])Enum.GetValues(typeof(BrickColor));
 
-            while (allAvailablePoints.Count > 0 && colorIndex < colorCount)
+            while (allAvailablePoints.Count > 0 && colorList.Count > 0)
             {
-                var currentColor = colors[colorIndex];
+                var currentColor = colorList[colorIndex];
 
-                if (result[currentColor].Count < maxBricksPerColor)
+                if (result[currentColor].Count < pointsPerColor)
                 {
                     var randomIndex = UnityEngine.Random.Range(0, allAvailablePoints.Count);
                     result[currentColor].Add(allAvailablePoints[randomIndex]);
                     allAvailablePoints.RemoveAt(randomIndex);
                 }
+                else
+                {
+                    colorList.RemoveAt(colorIndex);
+                    if (colorList.Count == 0)
+                        break;
+                    colorIndex = colorIndex % colorList.Count;
+                    continue;
+                }
 
-                colorIndex = (colorIndex + 1) % colorCount;
+                colorIndex = (colorIndex + 1) % colorList.Count;
             }
 
             return result;
@@ -131,6 +146,7 @@ namespace _GAME.Scripts.FSM.Brick
             else
             {
                 Debug.LogWarning("MaterialManager.Instance is null");
+                return;
             }
 
             foreach (var point in points)
@@ -147,6 +163,7 @@ namespace _GAME.Scripts.FSM.Brick
                 if (brick != null)
                 {
                     brick.Initialize(color, brickMaterial);
+                    brick.transform.SetParent(_brickParent);
 
                     _activeBricks[color].Add(brick);
 
@@ -156,18 +173,15 @@ namespace _GAME.Scripts.FSM.Brick
             }
         }
 
-        public void ActivateAllBricks(bool enabled)
+        private void ClearAllBricks()
         {
-            if(enabled == true) return;
-
-            // Create a copy of all active bricks to avoid collection modification errors
             var bricksCopy = new Dictionary<BrickColor, List<Brick>>();
 
             foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
             {
-                if (this._activeBricks.TryGetValue(color, out var brick))
+                if (_activeBricks.TryGetValue(color, out var bricks))
                 {
-                    bricksCopy[color] = new List<Brick>(brick);
+                    bricksCopy[color] = new List<Brick>(bricks);
                 }
             }
 
@@ -178,14 +192,20 @@ namespace _GAME.Scripts.FSM.Brick
                     RemoveBrick(brick);
                 }
             }
+        }
 
+        public void ActivateAllBricks(bool enabled)
+        {
+            if (enabled == true) return;
+
+            ClearAllBricks();
             LogActiveBrickCounts();
             Debug.Log("All bricks have been deactivated");
         }
 
         private void LogActiveBrickCounts()
         {
-            string brickCounts = "Active bricks: ";
+            var brickCounts = "Active bricks: ";
             foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
             {
                 brickCounts += $"{color}: {_activeBricks[color].Count}, ";
@@ -200,21 +220,15 @@ namespace _GAME.Scripts.FSM.Brick
             if (_activeBricks.ContainsKey(brick.Color))
             {
                 _activeBricks[brick.Color].Remove(brick);
-                if (this._brickToSpawnPointIndex.ContainsKey(brick))
-                {
-                    var spawnPointIndex = this._brickToSpawnPointIndex[brick];
-                    this._spawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
-                    this._brickToSpawnPointIndex.Remove(brick);
-                }
             }
 
             if (_brickToSpawnPointIndex.ContainsKey(brick))
             {
                 int spawnPointIndex = _brickToSpawnPointIndex[brick];
-                Debug.Log($"Freeing spawn point {spawnPointIndex}");
                 _spawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
                 _brickToSpawnPointIndex.Remove(brick);
             }
+
             brick.ReturnToPool();
         }
 
@@ -227,15 +241,15 @@ namespace _GAME.Scripts.FSM.Brick
             var newPoints = _spawnPointGenerator.GetRandomSpawnPoints(1);
             if (newPoints.Count > 0)
             {
-                var newPosition        = newPoints[0];
+                var newPosition = newPoints[0];
                 var newSpawnPointIndex = _spawnPointGenerator.GetSpawnPointIndex(newPosition);
 
-                brick.transform.position                          = newPosition + Vector3.down * 0.15f;
+                brick.transform.position = newPosition + Vector3.down * 0.15f;
 
                 brick.transform.SetParent(_brickParent);
-                brick.transform.localRotation                     = Quaternion.identity;
+                brick.transform.localRotation = Quaternion.identity;
                 var brickVisual = brick.transform.GetChild(0);
-                if(brickVisual != null)
+                if (brickVisual != null)
                 {
                     brickVisual.localRotation = Quaternion.identity;
                     brickVisual.localPosition = Vector3.zero;
