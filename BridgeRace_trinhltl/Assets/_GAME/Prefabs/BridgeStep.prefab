@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 5519081889653722921}
   - component: {fileID: 6871269823353618543}
   - component: {fileID: 6080436430016392751}
-  - component: {fileID: 1266837715996915940}
+  - component: {fileID: 4105214053312811801}
   m_Layer: 0
   m_Name: BridgeStep
   m_TagString: Bridge
@@ -152,8 +152,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultMaterial: {fileID: 2100000, guid: d11990d7c3ba77a46bb57207b174468d, type: 2}
-  renderer: {fileID: 1542361862931386750}
---- !u!114 &1266837715996915940
+--- !u!114 &4105214053312811801
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

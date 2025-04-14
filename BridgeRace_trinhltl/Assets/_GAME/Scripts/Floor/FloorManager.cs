@@ -86,6 +86,11 @@ namespace _GAME.Scripts.Floor
             return this.floors.IndexOf(this.currentFloor) + 1;
         }
 
+        public Floor GetCurrentFloorObject()
+        {
+            return this.currentFloor;
+        }
+
         public int GetFloorIndex(Floor floor)
         {
             return this.floors.IndexOf(floor);

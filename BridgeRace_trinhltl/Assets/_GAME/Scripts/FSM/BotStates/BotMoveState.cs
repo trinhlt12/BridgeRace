@@ -1,6 +1,7 @@
 namespace _GAME.Scripts.FSM.BotStates
 {
     using _GAME.Scripts.Character;
+    using _GAME.Scripts.Floor;
     using _GAME.Scripts.FSM.Brick;
     using UnityEngine;
 
@@ -20,6 +21,8 @@ namespace _GAME.Scripts.FSM.BotStates
         private float _lastTargetFindTime = 0f;
         private float _findTargetCooldown = 1f;
         private Brick _targetBrick;
+        private Floor _currentFloor => FloorManager.Instance.GetCurrentFloorObject();
+        private FloorGate _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
 
         public BotMoveState(StateMachine stateMachine, Character character) :
             base(stateMachine, character) { }
@@ -71,13 +74,10 @@ namespace _GAME.Scripts.FSM.BotStates
             if (BrickSpawner.Instance != null &&
                 (!BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks) || bricks.Count == 0))
             {
-                this._stateMachine.ChangeState<BotIdleState>();
-                return;
+                _bot.SetDestination(this._currentFloorGate.transform.position);
             }
 
-
             this._targetBrick = FindNearestBrick();
-            this._targetBrick.GetComponent<Brick>().Highlight(true);
             if (this._targetBrick != null)
             {
                 this._targetPosition = this._targetBrick.transform.position;
