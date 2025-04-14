@@ -32,15 +32,16 @@ namespace _GAME.Scripts.Floor
         private void Start()
         {
             InitializeFloors();
+            Debug.Log(this.currentFloor.gameObject.name);
+            Debug.Log("Numbers of chars on current floor:" + this.currentFloor.GetCharacterCount());
+            Debug.Log("Numbers of chars in total" + this.allCharacters.Count);
+            Debug.Log("Total floors: " + this.floors.Count);
+            //log number of characters in current floor:
+            Debug.Log($"Number of characters in current floor: {this.currentFloor.GetCharacterCount()}");
         }
 
         private void InitializeFloors()
         {
-            for (var i = 0; i < this.floors.Count; i++)
-            {
-                Debug.Log(this.floors[i].name);
-            }
-
             if (this.floors.Count > 0)
             {
                 this.currentFloor = this.floors[0];
@@ -53,27 +54,27 @@ namespace _GAME.Scripts.Floor
 
         public void RegisterCharacterToFloor(Character character, Floor floor)
         {
-            if (this.characterFloorMap.ContainsKey(character))
+            if (this.characterFloorMap.TryGetValue(character, out var previousFloor))
             {
-                var previousFloor = this.characterFloorMap[character];
                 if (previousFloor != null)
                 {
                     previousFloor.UnregisterCharacter(character);
                 }
-
-                floor.RegisterCharacter(character);
-                this.characterFloorMap[character] = floor;
-
-                if(!floor.IsActive())
-                {
-                    floor.Activate(true);
-                }
-
-                if (character.CompareTag("Player"))
-                {
-                    currentFloor = floor;
-                }
             }
+
+            floor.RegisterCharacter(character);
+            this.characterFloorMap[character] = floor;
+
+            if(!floor.IsActive())
+            {
+                floor.Activate(true);
+            }
+
+            if (character.CompareTag("Player"))
+            {
+                currentFloor = floor;
+            }
+
         }
 
         public int GetFloorIndex(Floor floor)
