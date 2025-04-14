@@ -19,6 +19,9 @@ namespace _GAME.Scripts.FSM.Brick
 
         public Dictionary<BrickColor, List<Brick>> _activeBricks = new Dictionary<BrickColor, List<Brick>>();
 
+        public delegate void BricksSpawnedDelegate(BrickColor color, int count);
+        public event BricksSpawnedDelegate OnBricksSpawned;
+
         private Dictionary<Brick, int> _brickToSpawnPointIndex = new Dictionary<Brick, int>();
 
         private SpawnPointGenerator _currentSpawnPointGenerator;
@@ -45,6 +48,9 @@ namespace _GAME.Scripts.FSM.Brick
             {
                 _activeBricks[(BrickColor)color] = new List<Brick>();
             }
+
+            Debug.Log($"Initialized _activeBricks with {_activeBricks.Count} colors");
+
         }
 
         private void Start()
@@ -175,6 +181,7 @@ namespace _GAME.Scripts.FSM.Brick
 
                     this._brickToSpawnPointIndex[brick] = spawnPointIndex;
                     this._currentSpawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, false);
+                    OnBricksSpawned?.Invoke(color, _activeBricks[color].Count);
                 }
             }
         }
@@ -205,8 +212,6 @@ namespace _GAME.Scripts.FSM.Brick
             if (enabled == true) return;
 
             ClearAllBricks();
-            LogActiveBrickCounts();
-            Debug.Log("All bricks have been deactivated");
         }
 
         private void LogActiveBrickCounts()
@@ -216,7 +221,7 @@ namespace _GAME.Scripts.FSM.Brick
             {
                 brickCounts += $"{color}: {_activeBricks[color].Count}, ";
             }
-            Debug.Log(brickCounts);
+            Debug.LogWarning(brickCounts);
         }
 
         public void RemoveBrick(Brick brick)

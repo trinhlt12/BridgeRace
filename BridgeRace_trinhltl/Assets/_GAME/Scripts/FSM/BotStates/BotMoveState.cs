@@ -19,6 +19,7 @@ namespace _GAME.Scripts.FSM.BotStates
 
         private float _lastTargetFindTime = 0f;
         private float _findTargetCooldown = 1f;
+        private Brick _targetBrick;
 
         public BotMoveState(StateMachine stateMachine, Character character) :
             base(stateMachine, character) { }
@@ -26,8 +27,20 @@ namespace _GAME.Scripts.FSM.BotStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this.FindNextTarget();
-            Debug.Log(_targetTransform);
+
+            BrickSpawner.Instance.OnBricksSpawned += HandleBricksSpawned;
+            _targetBrick = FindNearestBrick();
+
+        }
+
+        private void HandleBricksSpawned(BrickColor color, int count)
+        {
+            if (color == this._bot.characterColor && this._targetBrick == null)
+            {
+                _targetBrick = FindNearestBrick();
+                this.FindNextTarget();
+                Debug.LogWarning(this._targetBrick);
+            }
         }
 
         public override void OnUpdate()
@@ -36,12 +49,12 @@ namespace _GAME.Scripts.FSM.BotStates
 
             if(this._bot == null) return;
 
-            if (this._bot.HasReachedDestination())
+            /*if (this._bot.HasReachedDestination())
             {
                 HandleTargetReached();
-            }
+            }*/
 
-            if (this._elapsedTime >= this._lastTargetFindTime + this._findTargetCooldown)
+            if (Time.time >= this._lastTargetFindTime + this._findTargetCooldown)
             {
                 this.FindNextTarget();
                 _lastTargetFindTime = Time.time;
@@ -50,22 +63,13 @@ namespace _GAME.Scripts.FSM.BotStates
 
         private void HandleTargetReached()
         {
-            throw new System.NotImplementedException();
+
+            Debug.LogWarning("REACHED TARGET");
         }
 
         private void FindNextTarget()
         {
             FindBrickTarget();
-
-            /*if (this._bot.BrickCount > 0)
-            {
-                //find bridge target
-                /*FindBridgeTarget();#1#
-            }
-            else
-            {
-
-            }*/
         }
 
         private void FindBridgeTarget()
@@ -99,8 +103,10 @@ namespace _GAME.Scripts.FSM.BotStates
             Brick nearestBrick = null;
             var   minDistance  = float.MaxValue;
 
-            if (BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var brickList))
+            if (BrickSpawner.Instance._activeBricks.ContainsKey(this._bot.characterColor))
             {
+                var brickList = BrickSpawner.Instance._activeBricks[this._bot.characterColor];
+                Debug.LogWarning($"Active bricks count: {brickList.Count}");
                 foreach (var brick in brickList)
                 {
                     if (brick != null && brick.gameObject.activeInHierarchy)
@@ -117,6 +123,12 @@ namespace _GAME.Scripts.FSM.BotStates
                 }
             }
             return nearestBrick;
+        }
+
+        public override void OnExit()
+        {
+            base.OnExit();
+            BrickSpawner.Instance.OnBricksSpawned -= HandleBricksSpawned;
         }
     }
 }
