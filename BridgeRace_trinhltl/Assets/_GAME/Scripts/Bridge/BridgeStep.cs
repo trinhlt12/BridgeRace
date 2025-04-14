@@ -53,7 +53,7 @@ namespace _GAME.Scripts.FSM.Bridge
 
                 this.GetComponentInChildren<Renderer>().material = material;
 
-                other.GetComponent<PlayerController>().placeBrick(topBrick);
+                other.GetComponent<PlayerController>().PlaceBrick(topBrick);
 
             }
         }

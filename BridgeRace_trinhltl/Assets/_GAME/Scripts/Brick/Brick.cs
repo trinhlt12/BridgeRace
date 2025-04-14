@@ -47,6 +47,15 @@ namespace _GAME.Scripts.FSM.Brick
                     other.GetComponent<PlayerController>().PickUpBrick(this);
                 }
             }
+
+            if(other.CompareTag("Bot"))
+            {
+                var characterColor = other.GetComponent<Character>().characterColor;
+                if (this.Color == characterColor)
+                {
+                    other.GetComponent<BotController>().PickUpBrick(this);
+                }
+            }
         }
     }
 }

@@ -10,9 +10,12 @@ namespace _GAME.Scripts.Character
     public abstract class Character : MonoBehaviour
     {
         [SerializeField] protected StateMachine _stateMachine;
-        public                     BrickColor   characterColor;
+        [SerializeField] private   Transform    BrickHolder;
 
-        public Rigidbody rb;
+        public BrickColor characterColor;
+        public float      moveSpeed     = 5f;
+        public float      rotationSpeed = 10f;
+        public Rigidbody  rb;
 
         public                                       Animator           animator;
         [SerializeField]                     private Renderer           _renderer;
@@ -63,7 +66,10 @@ namespace _GAME.Scripts.Character
             }
         }
 
-        protected abstract void OnInit();
+        protected virtual void OnInit()
+        {
+            SetCharacterColor(characterColor);
+        }
 
         protected abstract void InitializeStates();
 
@@ -73,9 +79,22 @@ namespace _GAME.Scripts.Character
             {
                 brickStack.Push(brick);
             }
+
+            brick.transform.SetParent(BrickHolder);
+            brick.transform.localPosition = Vector3.zero;
+            brick.transform.localRotation = Quaternion.identity;
+
+            var brickCollider = brick.GetComponent<BoxCollider>();
+            var brickHeight   = brickCollider.bounds.size.y;
+            brickCollider.enabled = false;
+
+
+            var brickVisual = brick.transform.GetChild(0);
+
+            brickVisual.localPosition = new Vector3(0, this.brickStack.Count * brickHeight, 0);
         }
 
-        public virtual void placeBrick(Brick brick)
+        public virtual void PlaceBrick(Brick brick)
         {
             if (brick != null)
             {
@@ -97,6 +116,19 @@ namespace _GAME.Scripts.Character
                 {
                     brick.ReturnToPool();
                 }
+            }
+        }
+
+        public Brick GetTopBrick()
+        {
+            if (this.brickStack.Count > 0)
+            {
+                var topBrick = brickStack.Peek();
+                return topBrick;
+            }
+            else
+            {
+                return null;
             }
         }
     }
