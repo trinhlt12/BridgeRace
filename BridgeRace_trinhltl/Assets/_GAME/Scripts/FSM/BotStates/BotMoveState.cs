@@ -18,10 +18,10 @@ namespace _GAME.Scripts.FSM.BotStates
         private Transform     _targetTransform;
         private Vector3       _targetPosition;
 
-        private float _lastTargetFindTime = 0f;
-        private float _findTargetCooldown = 1f;
-        private Brick _targetBrick;
-        private Floor _currentFloor => FloorManager.Instance.GetCurrentFloorObject();
+        private float     _lastTargetFindTime = 0f;
+        private float     _findTargetCooldown = 1f;
+        private Brick     _targetBrick;
+        private Floor     _currentFloor     => FloorManager.Instance.GetCurrentFloorObject();
         private FloorGate _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
 
         public BotMoveState(StateMachine stateMachine, Character character) :
@@ -32,7 +32,6 @@ namespace _GAME.Scripts.FSM.BotStates
             base.OnEnter();
 
             BrickSpawner.Instance.OnBricksSpawned += HandleBricksSpawned;
-
         }
 
         private void HandleBricksSpawned(BrickColor color, int count)
@@ -48,8 +47,7 @@ namespace _GAME.Scripts.FSM.BotStates
             Brick nearestBrick = null;
             float minDistance  = float.MaxValue;
 
-            if (BrickSpawner.Instance != null &&
-                BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks))
+            if (BrickSpawner.Instance != null && BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks))
             {
                 foreach (var brick in bricks)
                 {
@@ -75,7 +73,6 @@ namespace _GAME.Scripts.FSM.BotStates
                 && this._bot.brickStack.Count > 0)
             {
                 _bot.SetDestination(this._currentFloorGate.transform.position);
-
             }
 
             this._targetBrick = FindNearestBrick();
@@ -89,9 +86,7 @@ namespace _GAME.Scripts.FSM.BotStates
             {
                 _targetBrick = null;
             }
-
         }
-
 
         public override void OnExit()
         {
