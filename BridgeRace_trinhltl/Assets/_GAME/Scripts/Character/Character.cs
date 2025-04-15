@@ -4,6 +4,7 @@ namespace _GAME.Scripts.Character
     using System.Collections.Generic;
     using _GAME.Scripts.FSM;
     using _GAME.Scripts.FSM.Brick;
+    using _GAME.Scripts.FSM.Bridge;
     using UnityEngine;
     using UnityEngine.Serialization;
 
@@ -11,6 +12,7 @@ namespace _GAME.Scripts.Character
     {
         [SerializeField] protected StateMachine _stateMachine;
         [SerializeField] private   Transform    BrickHolder;
+        public BridgeBlocker _bridgeBlocker;
 
         public BrickColor characterColor;
         public float      moveSpeed     = 5f;
@@ -22,6 +24,10 @@ namespace _GAME.Scripts.Character
 
         public readonly                             Stack<Brick> brickStack = new Stack<Brick>(); //stack of bricks
 
+        private bool _isOnBridge;
+        private BridgeStep _currentBridgeStep;
+
+        public bool IsOnBridge { get => _isOnBridge; set => _isOnBridge = value; } //is the character on the bridge
         //brick count
 
         protected virtual void Awake()
@@ -40,6 +46,34 @@ namespace _GAME.Scripts.Character
 
             this.OnInit();
         }
+
+        private void OnCollisionEnter(Collision other)
+        {
+            if (other.gameObject.CompareTag("Bridge"))
+            {
+                this.IsOnBridge = true;
+                this._currentBridgeStep = other.gameObject.GetComponentInChildren<BridgeStep>();
+            }
+        }
+
+        private void OnCollisionExit(Collision other)
+        {
+            if (other.gameObject.CompareTag("Bridge"))
+            {
+                this.IsOnBridge = false;
+                _currentBridgeStep = null;
+            }
+        }
+
+        public bool IsOnSameColorStep()
+        {
+            if (this._currentBridgeStep == null || !IsOnBridge)
+            {
+                return true;
+            }
+            return this._currentBridgeStep.IsColorMatch(this.characterColor);
+        }
+
 
         public virtual void SetCharacterColor(BrickColor color)
         {
@@ -139,5 +173,6 @@ namespace _GAME.Scripts.Character
                 return null;
             }
         }
+
     }
 }

@@ -21,6 +21,20 @@ namespace _GAME.Scripts.Character
             }
         }
 
+        private Vector3 _lastPosition;
+        private bool    _isMovingDownBridge = false;
+
+        private void Update()
+        {
+            if (IsOnBridge)
+            {
+                _isMovingDownBridge = transform.position.y < _lastPosition.y;
+                Debug.Log($"Is Moving Down Bridge: {_isMovingDownBridge}");
+            }
+
+            _lastPosition = transform.position;
+        }
+
         protected override void InitializeStates()
         {
             if (this._stateMachine != null)
@@ -43,6 +57,15 @@ namespace _GAME.Scripts.Character
             }
 
             return new Vector2(joystick.Horizontal, joystick.Vertical);
+        }
+
+        private bool IsMovingDownBridge()
+        {
+            if (!IsOnBridge) return false;
+
+            var velocity = rb.velocity;
+
+            return velocity.y < -0.1f;
         }
 
     }

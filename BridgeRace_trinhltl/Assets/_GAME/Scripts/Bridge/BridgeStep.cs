@@ -55,7 +55,28 @@ namespace _GAME.Scripts.FSM.Bridge
 
                 other.GetComponent<PlayerController>().PlaceBrick(topBrick);
 
+            }else if (other.CompareTag("Bot"))
+            {
+                var bot      = other.GetComponent<BotController>();
+                var topBrick = bot.GetTopBrick();
+                var botColor = bot.characterColor;
+
+                if (bot.BrickCount <= 0 || CurrentColor == botColor)
+                {
+                    return;
+                }
+
+                PreviousColor = CurrentColor;
+                CurrentColor  = botColor;
+                var material = MaterialManager.Instance.GetMaterial(botColor);
+                this.GetComponentInChildren<Renderer>().material = material;
+                other.GetComponent<BotController>().PlaceBrick(topBrick);
             }
+        }
+
+        public bool IsColorMatch(BrickColor color)
+        {
+            return CurrentColor == color;
         }
     }
 }

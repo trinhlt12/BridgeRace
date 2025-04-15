@@ -71,10 +71,11 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnUpdate();
 
-            if (BrickSpawner.Instance != null &&
-                (!BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks) || bricks.Count == 0))
+            if ((!BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks) || bricks.Count == 0)
+                && this._bot.brickStack.Count > 0)
             {
                 _bot.SetDestination(this._currentFloorGate.transform.position);
+
             }
 
             this._targetBrick = FindNearestBrick();
@@ -88,6 +89,7 @@ namespace _GAME.Scripts.FSM.BotStates
             {
                 _targetBrick = null;
             }
+
         }
 
 

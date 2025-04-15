@@ -13,10 +13,12 @@ namespace _GAME.Scripts.FSM.PlayerStates
         private float _groundedGravity = -1f;
         private float _maxAllowedSpeed = 8f;
 
-        private float _acceleration = 15f;
-        private float _deceleration = 20f;
+        private float   _acceleration    = 15f;
+        private float   _deceleration    = 20f;
         private Vector3 _currentVelocity = Vector3.zero;
-        private float _airControl = 0.7f;
+        private float   _airControl      = 0.7f;
+        private Vector3 _originalVelocity;
+
 
         public PlayerMovingState(StateMachine stateMachine, Character character)
             : base(stateMachine, character) { }
@@ -27,6 +29,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
             if (this._player != null && this._player.rb != null)
             {
                 _currentVelocity = this._player.rb.velocity;
+                this._originalVelocity = this._player.rb.velocity;
             }
         }
 
@@ -39,6 +42,21 @@ namespace _GAME.Scripts.FSM.PlayerStates
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();
             }
+
+            if (this._player.IsOnBridge)
+            {
+                if (this._player.BrickCount <= 0 && !this._player.IsOnSameColorStep())
+                {
+                    var playerPosition = this._player.transform.position;
+                    var forward        = this._player.transform.forward;
+                    this._player._bridgeBlocker.ActivateBlocker(playerPosition, forward);
+                }
+            }
+            else
+            {
+                this._player._bridgeBlocker.EnableBlocker(false);
+            }
+            Debug.Log($"Is On Same Color Step: {this._player.IsOnSameColorStep()}");
         }
 
         public override void OnFixedUpdate()
@@ -48,6 +66,19 @@ namespace _GAME.Scripts.FSM.PlayerStates
             {
                 return;
             }
+            /*if (this._player.IsOnBridge && this._player.BrickCount <= 0)
+            {
+                var velocity = this._player.rb.velocity;
+
+                var forward = this._player.transform.forward;
+
+                var forwardVelocity = Vector3.Project(velocity, forward);
+                _player.rb.velocity = velocity - forwardVelocity;
+            }
+            else
+            {
+                this._player.rb.velocity = this._originalVelocity;
+            }*/
 
             UpdateGroundState();
             Move(Time.fixedDeltaTime);
@@ -92,14 +123,15 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
         private void Move(float deltaTime)
         {
-            Vector3 moveDirection = new Vector3(this._currentInput.x, 0, this._currentInput.y).normalized;
+            var moveDirection = new Vector3(this._currentInput.x, 0, this._currentInput.y).normalized;
+
 
             if (_isGrounded)
             {
                 moveDirection = Vector3.ProjectOnPlane(moveDirection, _groundNormal).normalized;
             }
 
-            Vector3 targetVelocity = moveDirection * this._player.moveSpeed;
+            var targetVelocity = moveDirection * this._player.moveSpeed;
 
             if (_isGrounded)
             {
