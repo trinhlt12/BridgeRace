@@ -82,12 +82,21 @@ namespace _GAME.Scripts.Character
                 var bridgeStep = hit.collider.GetComponent<BridgeStep>();
                 if (bridgeStep != null)
                 {
-                    if (this.BrickCount <= 0 && !bridgeStep.IsColorMatch(this.characterColor))
+                    if (bridgeStep.IsColorMatch(this.characterColor))
                     {
-                        return false;
+                        return true;
                     }
-
-
+                    else
+                    {
+                        if (BrickCount <= 0)
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
             return true;
