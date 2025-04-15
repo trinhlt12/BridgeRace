@@ -18,6 +18,9 @@ namespace _GAME.Scripts.FSM.PlayerStates
         private Vector3 _currentVelocity = Vector3.zero;
         private float   _airControl      = 0.7f;
         private Vector3 _originalVelocity;
+        private Vector3 _currentPosition;
+        private Vector3 _originalPosition;
+        private Vector3 _lastPosition;
 
         public PlayerMovingState(StateMachine stateMachine, Character character)
             : base(stateMachine, character) { }
@@ -25,6 +28,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
         public override void OnEnter()
         {
             base.OnEnter();
+            _originalPosition = this._player.transform.position;
             if (this._player != null && this._player.rb != null)
             {
                 _currentVelocity       = this._player.rb.velocity;
@@ -44,19 +48,6 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
             Move(Time.deltaTime);
 
-            Debug.LogWarning(this._player.CanMoveForward());
-
-            /*if (this._player.IsOnBridge && this._player.BrickCount <= 0 && !this._player.IsOnSameColorStep())
-            {
-                var playerPosition = this._player.transform.position;
-                var forward        = this._player.transform.forward;
-                this._player._bridgeBlocker.ActivateBlocker(playerPosition, forward);
-            }
-            else
-            {
-                this._player._bridgeBlocker.EnableBlocker(false);
-            }
-            Debug.Log($"Is On Same Color Step: {this._player.IsOnSameColorStep()}");*/
         }
 
         public override void OnFixedUpdate()
@@ -74,7 +65,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
         private void UpdateGroundState()
         {
             RaycastHit hit;
-            Vector3    rayStart = this._player.transform.position + Vector3.up * 0.1f;
+            var    rayStart = this._player.transform.position + Vector3.up * 0.1f;
 
             _isGrounded = Physics.Raycast(
                 rayStart,
@@ -93,7 +84,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
             {
                 _groundNormal = hit.normal;
 
-                float slopeAngle = Vector3.Angle(_groundNormal, Vector3.up);
+                var slopeAngle = Vector3.Angle(_groundNormal, Vector3.up);
 
                 if (slopeAngle > _slopeLimit)
                 {
@@ -109,7 +100,13 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
         private void Move(float deltaTime)
         {
+            if (!this._player.CanMove())
+            {
+                return;
+            }
+
             var moveDirection = new Vector3(this._currentInput.x, 0, this._currentInput.y).normalized;
+            this._player._lastPosition = this._player.transform.position;
 
             if (_isGrounded)
             {
@@ -140,7 +137,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
             }
             else
             {
-                Vector3 horizontalVel = new Vector3(_currentVelocity.x, 0, _currentVelocity.z);
+                var horizontalVel = new Vector3(_currentVelocity.x, 0, _currentVelocity.z);
                 horizontalVel = Vector3.Lerp(
                     horizontalVel,
                     targetVelocity * _airControl,
@@ -153,7 +150,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
             var horizontalSpeed = new Vector3(_currentVelocity.x, 0, _currentVelocity.z).magnitude;
             if (horizontalSpeed > _maxAllowedSpeed)
             {
-                float limitFactor = _maxAllowedSpeed / horizontalSpeed;
+                var limitFactor = _maxAllowedSpeed / horizontalSpeed;
                 _currentVelocity = new Vector3(
                     _currentVelocity.x * limitFactor,
                     _currentVelocity.y,
@@ -163,15 +160,6 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
             this._player.transform.Translate(_currentVelocity * deltaTime, Space.World);
 
-            if (_player.IsOnBridge)
-            {
-                bool isMovingUp = _player.transform.position.y > originalPosition.y;
-
-                if (isMovingUp && !this._player.CanMoveForward())
-                {
-                    _player.transform.position = originalPosition;
-                }
-            }
         }
 
         private void RotateTowardsMoveDirection()
@@ -180,7 +168,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
             if (movementDirection.magnitude > 0.1f)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(movementDirection.normalized, _groundNormal);
+                var targetRotation = Quaternion.LookRotation(movementDirection.normalized, _groundNormal);
 
                 this._player.transform.rotation = Quaternion.Slerp(
                     this._player.transform.rotation,
@@ -189,6 +177,10 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 );
             }
         }
+
+
+
+
 
         public override void OnExit()
         {

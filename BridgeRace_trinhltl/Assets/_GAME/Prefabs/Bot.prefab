@@ -8,15 +8,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 91795597879672460, guid: 234ee45778616a34e8137ed514bfab9e,
+        type: 3}
+      propertyPath: m_Radius
+      value: 0.39
+      objectReference: {fileID: 0}
     - target: {fileID: 211102514613379356, guid: 234ee45778616a34e8137ed514bfab9e,
         type: 3}
       propertyPath: m_Name
       value: Bot
       objectReference: {fileID: 0}
+    - target: {fileID: 211102514613379356, guid: 234ee45778616a34e8137ed514bfab9e,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 211102514613379356, guid: 234ee45778616a34e8137ed514bfab9e,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bot
+      objectReference: {fileID: 0}
     - target: {fileID: 2963868821162461858, guid: 234ee45778616a34e8137ed514bfab9e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -1.089
       objectReference: {fileID: 0}
     - target: {fileID: 2963868821162461858, guid: 234ee45778616a34e8137ed514bfab9e,
         type: 3}
@@ -26,7 +41,7 @@ PrefabInstance:
     - target: {fileID: 2963868821162461858, guid: 234ee45778616a34e8137ed514bfab9e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -3.175
       objectReference: {fileID: 0}
     - target: {fileID: 2963868821162461858, guid: 234ee45778616a34e8137ed514bfab9e,
         type: 3}
@@ -73,6 +88,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: c45e90684e2d0ca489a763a6758efb49, type: 2}
+    - target: {fileID: 8435407392929364845, guid: 234ee45778616a34e8137ed514bfab9e,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 315a2a2da269a794d89848f24f126176, type: 2}
     m_RemovedComponents:
     - {fileID: 4703940741214114050, guid: 234ee45778616a34e8137ed514bfab9e, type: 3}
     m_RemovedGameObjects: []
@@ -87,6 +107,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 7710758564102539090}
   m_SourcePrefab: {fileID: 100100000, guid: 234ee45778616a34e8137ed514bfab9e, type: 3}
+--- !u!137 &1038088541968931717 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6052832980225773195, guid: 234ee45778616a34e8137ed514bfab9e,
+    type: 3}
+  m_PrefabInstance: {fileID: 6744126705915811086}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &2920414849229155939 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 8435407392929364845, guid: 234ee45778616a34e8137ed514bfab9e,
@@ -120,12 +146,12 @@ MonoBehaviour:
   _stateMachine: {fileID: 8390246387272109355}
   BrickHolder: {fileID: 3525471720967285258}
   characterColor: 1
-  moveSpeed: 5
-  rotationSpeed: 10
-  rb: {fileID: 7407707213220898447}
+  moveSpeed: 10
+  rotationSpeed: 30
   animator: {fileID: 2920414849229155939}
-  _renderer: {fileID: 0}
+  _renderer: {fileID: 1038088541968931717}
   navMeshAgent: {fileID: 7710758564102539090}
+  _minDistanceToTarget: 0.5
 --- !u!195 &7710758564102539090
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -135,12 +161,12 @@ NavMeshAgent:
   m_GameObject: {fileID: 6879828008877601810}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.41
   m_Speed: 3.5
-  m_Acceleration: 8
+  m_Acceleration: 6
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0
+  m_StoppingDistance: 0.1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -148,12 +174,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!54 &7407707213220898447 stripped
-Rigidbody:
-  m_CorrespondingSourceObject: {fileID: 4276878094837953409, guid: 234ee45778616a34e8137ed514bfab9e,
-    type: 3}
-  m_PrefabInstance: {fileID: 6744126705915811086}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8390246387272109355 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3019618620785137701, guid: 234ee45778616a34e8137ed514bfab9e,

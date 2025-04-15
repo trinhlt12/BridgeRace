@@ -7,12 +7,14 @@ namespace _GAME.Scripts.Character
 
     public class BotController : Character
     {
-        [SerializeField] private NavMeshAgent navMeshAgent;
-        [SerializeField] public  float        _minDistanceToTarget = 0.5f;
+        public                  NavMeshAgent navMeshAgent;
+        [SerializeField] public float        _minDistanceToTarget = 0.5f;
 
         protected override void OnInit()
         {
             base.OnInit();
+
+            navMeshAgent = GetComponent<NavMeshAgent>();
 
             this.navMeshAgent.speed        = this.moveSpeed;
             this.navMeshAgent.angularSpeed = this.rotationSpeed * 10f;

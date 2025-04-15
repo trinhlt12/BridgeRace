@@ -12,7 +12,6 @@ namespace _GAME.Scripts.Character
     {
         [SerializeField] protected StateMachine _stateMachine;
         [SerializeField] private   Transform    BrickHolder;
-        public BridgeBlocker _bridgeBlocker;
 
         public BrickColor characterColor;
         public float      moveSpeed     = 5f;
@@ -25,7 +24,7 @@ namespace _GAME.Scripts.Character
         public readonly                             Stack<Brick> brickStack = new Stack<Brick>(); //stack of bricks
 
         private bool _isOnBridge;
-        private BridgeStep _currentBridgeStep;
+        public BridgeStep _currentBridgeStep;
 
         public bool IsOnBridge { get => _isOnBridge; set => _isOnBridge = value; } //is the character on the bridge
         //brick count

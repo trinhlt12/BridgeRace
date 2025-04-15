@@ -11,8 +11,10 @@ namespace _GAME.Scripts.Character
     public class PlayerController : Character
     {
         [SerializeField] private FloatingJoystick joystick;
-        [SerializeField] private LayerMask      bridgeLayerMask;
+        public                   LayerMask        bridgeLayerMask;
         public                   Rigidbody        rb;
+        public                  Vector3          _lastPosition;
+
 
         protected override void OnInit()
         {
@@ -21,20 +23,6 @@ namespace _GAME.Scripts.Character
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();
             }
-        }
-
-        private Vector3 _lastPosition;
-        private bool    _isMovingDownBridge = false;
-
-        private void Update()
-        {
-            if (IsOnBridge)
-            {
-                _isMovingDownBridge = transform.position.y < _lastPosition.y;
-                Debug.Log($"Is Moving Down Bridge: {_isMovingDownBridge}");
-            }
-
-            _lastPosition = transform.position;
         }
 
         protected override void InitializeStates()
@@ -54,57 +42,39 @@ namespace _GAME.Scripts.Character
         {
             if (joystick == null)
             {
-                Debug.LogWarning("Joystick is null in PlayerController.GetMovementInput");
                 return Vector2.zero;
             }
 
             return new Vector2(joystick.Horizontal, joystick.Vertical);
         }
 
-        private bool IsMovingDownBridge()
+        /*public bool CanMoveForward()
         {
-            if (!IsOnBridge) return false;
+            var forwardPosition = this.transform.position + this.transform.forward * 0.5f + Vector3.up * 0.1f;
 
-            var velocity = rb.velocity;
+            var rayDirection = new Vector3(this.transform.forward.x, -0.5f, this.transform.forward.z).normalized;
+            var rayDistance  = 1.5f;
 
-            return velocity.y < -0.1f;
-        }
+            Debug.DrawRay(forwardPosition, rayDirection * rayDistance, Color.red);
 
-        public bool CanMoveForward()
-        {
-            Vector3 forwardPosition = this.transform.position +
-                this.transform.forward * 0.5f +
-                Vector3.up * 0.1f;
-
-            RaycastHit hit;
-            int        bridgeLayerMask = 1 << LayerMask.NameToLayer("Bridge");
-
-            Vector3 rayDirection = new Vector3(this.transform.forward.x, -0.5f, this.transform.forward.z).normalized;
-            float   rayDistance  = 1.5f;
-
-            Debug.DrawRay(forwardPosition, rayDirection * rayDistance, Color.red, 0.1f);
-
-            if (Physics.Raycast(forwardPosition, rayDirection, out hit, rayDistance, bridgeLayerMask))
+            if (Physics.Raycast(forwardPosition, rayDirection, out var hit, rayDistance, bridgeLayerMask))
             {
-                var bridgeStep   = hit.collider.GetComponent<BridgeStep>();
-                var stepCollider = hit.collider;
+                var bridgeStep = hit.collider.GetComponent<BridgeStep>();
+                Debug.LogWarning(hit.collider.name);
                 if (bridgeStep != null)
                 {
                     if (bridgeStep.IsColorMatch(this.characterColor))
                     {
-                        stepCollider.enabled = true;
                         return true;
                     }
                     else
                     {
                         if (BrickCount <= 0)
                         {
-                            stepCollider.enabled = false;
                             return false;
                         }
                         else
                         {
-                            stepCollider.enabled = true;
                             return true;
                         }
                     }
@@ -112,6 +82,54 @@ namespace _GAME.Scripts.Character
             }
 
             return true;
+        }*/
+
+        public bool IsMovingDownTheBridge()
+        {
+            var playerVelocity = this.transform.position - this._lastPosition;
+            var rayStart      = this.transform.position + Vector3.up * 0.1f;
+            var rayDirection  = Vector3.down;
+            var rayDistance   = 1.5f;
+
+            if (Physics.Raycast(rayStart, rayDirection, out var hit, rayDistance, this.bridgeLayerMask))
+            {
+                var dotProduct    = Vector3.Dot(playerVelocity, hit.transform.forward);
+
+                Debug.DrawRay(hit.point, hit.transform.forward * 2f, Color.blue, 0.1f);
+                Debug.DrawRay(hit.point, playerVelocity * 2f, Color.red, 0.1f);
+
+                if (dotProduct <= 0)
+                {
+                    Debug.Log("Moving down the bridge");
+                    return true;
+                }
+                else if (dotProduct > 0)
+                {
+                    Debug.Log("Moving up the bridge");
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        private Vector3 GetMoveDirection()
+        {
+            return new Vector3(this.GetMovementInput().x, 0, this.GetMovementInput().y).normalized;
+        }
+
+        public bool CanMove()
+        {
+            if (!IsOnBridge || this.IsMovingDownTheBridge()) return true;
+
+            var isColorMatch = _currentBridgeStep.IsColorMatch(this.characterColor);
+            if (this.BrickCount <= 0)
+            {
+                return isColorMatch;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

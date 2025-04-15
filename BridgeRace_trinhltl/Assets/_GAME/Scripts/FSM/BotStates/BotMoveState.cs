@@ -75,6 +75,11 @@ namespace _GAME.Scripts.FSM.BotStates
                 _bot.SetDestination(this._currentFloorGate.transform.position);
             }
 
+            /*if (this._bot.navMeshAgent.velocity.sqrMagnitude <= 0.1f)
+            {
+                this._stateMachine.ChangeState<BotIdleState>();
+            }*/
+
             this._targetBrick = FindNearestBrick();
             if (this._targetBrick != null)
             {

@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 6871269823353618543}
   - component: {fileID: 6080436430016392751}
   - component: {fileID: 4105214053312811801}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: BridgeStep
   m_TagString: Bridge
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
