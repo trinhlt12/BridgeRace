@@ -6,19 +6,18 @@ namespace _GAME.Scripts.FSM.PlayerStates
     public class PlayerMovingState : BaseState
     {
         private Vector2 _currentInput;
-        private Vector3 _groundNormal = Vector3.up;
-        private bool _isGrounded = true;
-        private float _groundCheckDistance = 0.2f;
-        private float _slopeLimit = 45f;
-        private float _groundedGravity = -1f;
-        private float _maxAllowedSpeed = 8f;
+        private Vector3 _groundNormal        = Vector3.up;
+        private bool    _isGrounded          = true;
+        private float   _groundCheckDistance = 0.2f;
+        private float   _slopeLimit          = 45f;
+        private float   _groundedGravity     = -1f;
+        private float   _maxAllowedSpeed     = 8f;
 
         private float   _acceleration    = 15f;
         private float   _deceleration    = 20f;
         private Vector3 _currentVelocity = Vector3.zero;
         private float   _airControl      = 0.7f;
         private Vector3 _originalVelocity;
-
 
         public PlayerMovingState(StateMachine stateMachine, Character character)
             : base(stateMachine, character) { }
@@ -28,7 +27,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
             base.OnEnter();
             if (this._player != null && this._player.rb != null)
             {
-                _currentVelocity = this._player.rb.velocity;
+                _currentVelocity       = this._player.rb.velocity;
                 this._originalVelocity = this._player.rb.velocity;
             }
         }
@@ -43,23 +42,21 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 this._stateMachine.ChangeState<PlayerIdleState>();
             }
 
-
             Move(Time.deltaTime);
 
-            if (this._player.IsOnBridge)
+            Debug.LogWarning(this._player.CanMoveForward());
+
+            /*if (this._player.IsOnBridge && this._player.BrickCount <= 0 && !this._player.IsOnSameColorStep())
             {
-                if (this._player.BrickCount <= 0 && !this._player.IsOnSameColorStep())
-                {
-                    var playerPosition = this._player.transform.position;
-                    var forward        = this._player.transform.forward;
-                    this._player._bridgeBlocker.ActivateBlocker(playerPosition, forward);
-                }
+                var playerPosition = this._player.transform.position;
+                var forward        = this._player.transform.forward;
+                this._player._bridgeBlocker.ActivateBlocker(playerPosition, forward);
             }
             else
             {
                 this._player._bridgeBlocker.EnableBlocker(false);
             }
-            Debug.Log($"Is On Same Color Step: {this._player.IsOnSameColorStep()}");
+            Debug.Log($"Is On Same Color Step: {this._player.IsOnSameColorStep()}");*/
         }
 
         public override void OnFixedUpdate()
@@ -77,7 +74,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
         private void UpdateGroundState()
         {
             RaycastHit hit;
-            Vector3 rayStart = this._player.transform.position + Vector3.up * 0.1f;
+            Vector3    rayStart = this._player.transform.position + Vector3.up * 0.1f;
 
             _isGrounded = Physics.Raycast(
                 rayStart,
@@ -100,7 +97,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
                 if (slopeAngle > _slopeLimit)
                 {
-                    _isGrounded = false;
+                    _isGrounded   = false;
                     _groundNormal = Vector3.up;
                 }
             }
@@ -118,6 +115,20 @@ namespace _GAME.Scripts.FSM.PlayerStates
             {
                 moveDirection = Vector3.ProjectOnPlane(moveDirection, _groundNormal).normalized;
             }
+
+            if (_player.IsOnBridge)
+            {
+                bool canMoveForward = this._player.CanMoveForward();
+
+                if (!canMoveForward)
+                {
+                    var dotProduct = Vector3.Dot(moveDirection.normalized, _player.transform.forward.normalized);
+
+                    if (dotProduct > 0)
+                        moveDirection = Vector3.zero;
+                }
+            }
+
 
             var targetVelocity = moveDirection * this._player.moveSpeed;
 
@@ -152,7 +163,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 _currentVelocity = new Vector3(horizontalVel.x, _currentVelocity.y, horizontalVel.z);
             }
 
-            float horizontalSpeed = new Vector3(_currentVelocity.x, 0, _currentVelocity.z).magnitude;
+            var horizontalSpeed = new Vector3(_currentVelocity.x, 0, _currentVelocity.z).magnitude;
             if (horizontalSpeed > _maxAllowedSpeed)
             {
                 float limitFactor = _maxAllowedSpeed / horizontalSpeed;

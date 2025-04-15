@@ -4,12 +4,14 @@ namespace _GAME.Scripts.Character
     using System.Collections.Generic;
     using _GAME.Scripts.FSM;
     using _GAME.Scripts.FSM.Brick;
+    using _GAME.Scripts.FSM.Bridge;
     using _GAME.Scripts.FSM.PlayerStates;
     using UnityEngine;
 
     public class PlayerController : Character
     {
         [SerializeField] private FloatingJoystick joystick;
+        [SerializeField] private LayerMask      bridgeLayerMask;
         public                   Rigidbody        rb;
 
         protected override void OnInit()
@@ -68,5 +70,27 @@ namespace _GAME.Scripts.Character
             return velocity.y < -0.1f;
         }
 
+        public bool CanMoveForward()
+        {
+            var forwardPosition = this.transform.position + this.transform.forward * 0.5f;
+
+            RaycastHit hit;
+            Debug.DrawRay(forwardPosition, Vector3.down * 1.5f, Color.red, 0.1f);
+
+            if (Physics.Raycast(forwardPosition, Vector3.down, out hit, 1.5f, bridgeLayerMask))
+            {
+                var bridgeStep = hit.collider.GetComponent<BridgeStep>();
+                if (bridgeStep != null)
+                {
+                    if (this.BrickCount <= 0 && !bridgeStep.IsColorMatch(this.characterColor))
+                    {
+                        return false;
+                    }
+
+
+                }
+            }
+            return true;
+        }
     }
 }
