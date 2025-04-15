@@ -43,6 +43,9 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 this._stateMachine.ChangeState<PlayerIdleState>();
             }
 
+
+            Move(Time.deltaTime);
+
             if (this._player.IsOnBridge)
             {
                 if (this._player.BrickCount <= 0 && !this._player.IsOnSameColorStep())
@@ -66,22 +69,8 @@ namespace _GAME.Scripts.FSM.PlayerStates
             {
                 return;
             }
-            /*if (this._player.IsOnBridge && this._player.BrickCount <= 0)
-            {
-                var velocity = this._player.rb.velocity;
-
-                var forward = this._player.transform.forward;
-
-                var forwardVelocity = Vector3.Project(velocity, forward);
-                _player.rb.velocity = velocity - forwardVelocity;
-            }
-            else
-            {
-                this._player.rb.velocity = this._originalVelocity;
-            }*/
 
             UpdateGroundState();
-            Move(Time.fixedDeltaTime);
             RotateTowardsMoveDirection();
         }
 
@@ -125,7 +114,6 @@ namespace _GAME.Scripts.FSM.PlayerStates
         {
             var moveDirection = new Vector3(this._currentInput.x, 0, this._currentInput.y).normalized;
 
-
             if (_isGrounded)
             {
                 moveDirection = Vector3.ProjectOnPlane(moveDirection, _groundNormal).normalized;
@@ -151,8 +139,6 @@ namespace _GAME.Scripts.FSM.PlayerStates
                         _deceleration * deltaTime
                     );
                 }
-                Vector3 gravity = _groundNormal * _groundedGravity;
-                _currentVelocity += gravity * deltaTime;
             }
             else
             {
@@ -163,7 +149,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
                     _acceleration * _airControl * deltaTime
                 );
 
-                _currentVelocity = new Vector3(horizontalVel.x, this._player.rb.velocity.y, horizontalVel.z);
+                _currentVelocity = new Vector3(horizontalVel.x, _currentVelocity.y, horizontalVel.z);
             }
 
             float horizontalSpeed = new Vector3(_currentVelocity.x, 0, _currentVelocity.z).magnitude;
@@ -176,19 +162,21 @@ namespace _GAME.Scripts.FSM.PlayerStates
                     _currentVelocity.z * limitFactor
                 );
             }
-            this._player.rb.velocity = _currentVelocity;
+
+            // Use transform.Translate to move the player
+            this._player.transform.Translate(_currentVelocity * deltaTime, Space.World);
         }
 
         private void RotateTowardsMoveDirection()
         {
-            Vector3 movementDirection = new Vector3(this._player.rb.velocity.x, 0, this._player.rb.velocity.z);
+            var movementDirection = new Vector3(_currentVelocity.x, 0, _currentVelocity.z);
 
             if (movementDirection.magnitude > 0.1f)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(movementDirection.normalized, _groundNormal);
 
-                this._player.rb.rotation = Quaternion.Slerp(
-                    this._player.rb.rotation,
+                this._player.transform.rotation = Quaternion.Slerp(
+                    this._player.transform.rotation,
                     targetRotation,
                     this._player.rotationSpeed * Time.fixedDeltaTime
                 );
