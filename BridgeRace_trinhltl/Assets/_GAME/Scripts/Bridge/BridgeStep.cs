@@ -22,6 +22,8 @@ namespace _GAME.Scripts.FSM.Bridge
                 this.GetComponentInChildren<Renderer>().material = this.defaultMaterial;
             }
         }
+
+
         public void Reset()
         {
             CurrentColor  = BrickColor.Grey;

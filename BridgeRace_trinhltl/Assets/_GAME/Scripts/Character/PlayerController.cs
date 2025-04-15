@@ -86,21 +86,25 @@ namespace _GAME.Scripts.Character
 
             if (Physics.Raycast(forwardPosition, rayDirection, out hit, rayDistance, bridgeLayerMask))
             {
-                BridgeStep bridgeStep = hit.collider.GetComponent<BridgeStep>();
+                var bridgeStep   = hit.collider.GetComponent<BridgeStep>();
+                var stepCollider = hit.collider;
                 if (bridgeStep != null)
                 {
                     if (bridgeStep.IsColorMatch(this.characterColor))
                     {
+                        stepCollider.enabled = true;
                         return true;
                     }
                     else
                     {
                         if (BrickCount <= 0)
                         {
+                            stepCollider.enabled = false;
                             return false;
                         }
                         else
                         {
+                            stepCollider.enabled = true;
                             return true;
                         }
                     }
