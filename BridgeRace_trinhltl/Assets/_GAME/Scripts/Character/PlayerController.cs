@@ -72,14 +72,21 @@ namespace _GAME.Scripts.Character
 
         public bool CanMoveForward()
         {
-            var forwardPosition = this.transform.position + this.transform.forward * 0.5f;
+            Vector3 forwardPosition = this.transform.position +
+                this.transform.forward * 0.5f +
+                Vector3.up * 0.1f;
 
             RaycastHit hit;
-            Debug.DrawRay(forwardPosition, Vector3.down * 1.5f, Color.red, 0.1f);
+            int        bridgeLayerMask = 1 << LayerMask.NameToLayer("Bridge");
 
-            if (Physics.Raycast(forwardPosition, Vector3.down, out hit, 1.5f, bridgeLayerMask))
+            Vector3 rayDirection = new Vector3(this.transform.forward.x, -0.5f, this.transform.forward.z).normalized;
+            float   rayDistance  = 1.5f;
+
+            Debug.DrawRay(forwardPosition, rayDirection * rayDistance, Color.red, 0.1f);
+
+            if (Physics.Raycast(forwardPosition, rayDirection, out hit, rayDistance, bridgeLayerMask))
             {
-                var bridgeStep = hit.collider.GetComponent<BridgeStep>();
+                BridgeStep bridgeStep = hit.collider.GetComponent<BridgeStep>();
                 if (bridgeStep != null)
                 {
                     if (bridgeStep.IsColorMatch(this.characterColor))
@@ -99,6 +106,7 @@ namespace _GAME.Scripts.Character
                     }
                 }
             }
+
             return true;
         }
     }

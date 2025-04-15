@@ -116,21 +116,8 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 moveDirection = Vector3.ProjectOnPlane(moveDirection, _groundNormal).normalized;
             }
 
-            if (_player.IsOnBridge)
-            {
-                bool canMoveForward = this._player.CanMoveForward();
-
-                if (!canMoveForward)
-                {
-                    var dotProduct = Vector3.Dot(moveDirection.normalized, _player.transform.forward.normalized);
-
-                    if (dotProduct > 0)
-                        moveDirection = Vector3.zero;
-                }
-            }
-
-
-            var targetVelocity = moveDirection * this._player.moveSpeed;
+            var originalPosition = this._player.transform.position;
+            var targetVelocity  = moveDirection * this._player.moveSpeed;
 
             if (_isGrounded)
             {
@@ -174,8 +161,17 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 );
             }
 
-            // Use transform.Translate to move the player
             this._player.transform.Translate(_currentVelocity * deltaTime, Space.World);
+
+            if (_player.IsOnBridge)
+            {
+                bool isMovingUp = _player.transform.position.y > originalPosition.y;
+
+                if (isMovingUp && !this._player.CanMoveForward())
+                {
+                    _player.transform.position = originalPosition;
+                }
+            }
         }
 
         private void RotateTowardsMoveDirection()
