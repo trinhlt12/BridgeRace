@@ -33,11 +33,11 @@ namespace _GAME.Scripts.FSM.Bridge
             }
         }
 
-        private void OnTriggerEnter(Collider other)
+        private void OnCollisionEnter(Collision other)
         {
-            if (other.CompareTag("Player"))
+            if (other.gameObject.CompareTag("Player"))
             {
-                var player      = other.GetComponent<PlayerController>();
+                var player      = other.gameObject.GetComponent<PlayerController>();
                 var topBrick    = player.GetTopBrick();
                 var playerColor = player.characterColor;
 
@@ -53,11 +53,11 @@ namespace _GAME.Scripts.FSM.Bridge
 
                 this.GetComponentInChildren<Renderer>().material = material;
 
-                other.GetComponent<PlayerController>().PlaceBrick(topBrick);
+                other.gameObject.GetComponent<PlayerController>().PlaceBrick(topBrick);
 
-            }else if (other.CompareTag("Bot"))
+            }else if (other.gameObject.CompareTag("Bot"))
             {
-                var bot      = other.GetComponent<BotController>();
+                var bot      = other.gameObject.GetComponent<BotController>();
                 var topBrick = bot.GetTopBrick();
                 var botColor = bot.characterColor;
 
@@ -70,7 +70,7 @@ namespace _GAME.Scripts.FSM.Bridge
                 CurrentColor  = botColor;
                 var material = MaterialManager.Instance.GetMaterial(botColor);
                 this.GetComponentInChildren<Renderer>().material = material;
-                other.GetComponent<BotController>().PlaceBrick(topBrick);
+                other.gameObject.GetComponent<BotController>().PlaceBrick(topBrick);
             }
         }
 
