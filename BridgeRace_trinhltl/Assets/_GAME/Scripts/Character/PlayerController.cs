@@ -122,9 +122,17 @@ namespace _GAME.Scripts.Character
             if (!IsOnBridge || this.IsMovingDownTheBridge()) return true;
 
             var isColorMatch = _currentBridgeStep.IsColorMatch(this.characterColor);
-            if (this.BrickCount <= 0)
+
+            if (!isColorMatch)
             {
-                return isColorMatch;
+                if (BrickCount <= 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
             else
             {
