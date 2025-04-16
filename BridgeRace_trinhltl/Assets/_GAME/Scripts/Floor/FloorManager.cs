@@ -12,10 +12,11 @@ namespace _GAME.Scripts.Floor
         public static FloorManager Instance { get; private set; }
 
         [SerializeField] public  List<Floor>             floors        = new List<Floor>();
-        [SerializeField] private List<Character> allCharacters = new List<Character>();
+        public List<Character> allCharacters = new List<Character>();
 
-        private Floor currentFloor;
+        private Floor                        currentFloor;
         private Dictionary<Character, Floor> characterFloorMap = new Dictionary<Character, Floor>();
+        public  List<BotController>          allBots;
 
         private void Awake()
         {
@@ -108,6 +109,31 @@ namespace _GAME.Scripts.Floor
         public bool IsCurrentFloor(Floor floor)
         {
             return floor == this.currentFloor;
+        }
+
+        public List<BotController> GetAllBots()
+        {
+            var bots = new List<BotController>();
+            foreach (var character in allCharacters)
+            {
+                if (character is BotController bot)
+                {
+                    bots.Add(bot);
+                }
+            }
+            return bots;
+        }
+
+        public int GetFloorGateIndex(FloorGate gate)
+        {
+            foreach (var floor in floors)
+            {
+                if (floor.floorGate.Contains(gate))
+                {
+                    return floor.floorGate.IndexOf(gate);
+                }
+            }
+            return -1;
         }
     }
 }

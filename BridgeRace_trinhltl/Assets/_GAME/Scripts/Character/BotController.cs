@@ -1,14 +1,18 @@
 namespace _GAME.Scripts.Character
 {
+    using System.Collections;
     using _GAME.Scripts.FSM.BotStates;
     using _GAME.Scripts.FSM.Brick;
+    using _GAME.Scripts.FSM.Bridge;
     using UnityEngine;
     using UnityEngine.AI;
+    using UnityEngine.Serialization;
 
     public class BotController : Character
     {
         public                  NavMeshAgent navMeshAgent;
-        [SerializeField] public float        _minDistanceToTarget = 0.5f;
+        [SerializeField] public float        _minDistanceToTarget   = 0.5f;
+        public                  int          currentTargetGateIndex = -1;
 
         protected override void OnInit()
         {
@@ -55,6 +59,27 @@ namespace _GAME.Scripts.Character
                     <= this._minDistanceToTarget;
             }
             return false;
+        }
+
+        public int GetCurrentTargetGateIndex()
+        {
+            return this.currentTargetGateIndex;
+        }
+
+        public void TargetGateOccupied()
+        {
+            if (currentTargetGateIndex >= 0)
+            {
+                GateTargetManager.Instance.ReleaseGate(currentTargetGateIndex, this);
+                currentTargetGateIndex = -1;
+            }
+
+            var moveState = this._stateMachine.GetState<BotMoveState>();
+            if (moveState != null)
+            {
+                moveState.RecalculateTarget();
+            }
+
         }
     }
 }

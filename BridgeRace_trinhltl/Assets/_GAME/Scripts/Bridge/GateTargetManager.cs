@@ -39,7 +39,7 @@ namespace _GAME.Scripts.FSM.Bridge
             return false;
         }
 
-        public void ReleaseGates(int gateIndex, BotController bot)
+        public void ReleaseGate(int gateIndex, BotController bot)
         {
             if (this._reservedGates.TryGetValue(gateIndex, out var reservedBot) && reservedBot == bot)
             {

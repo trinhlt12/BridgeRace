@@ -4,6 +4,7 @@ namespace _GAME.Scripts.FSM.BotStates
     using _GAME.Scripts.Character;
     using _GAME.Scripts.Floor;
     using _GAME.Scripts.FSM.Brick;
+    using _GAME.Scripts.FSM.Bridge;
     using UnityEngine;
 
     public enum BotTargetType
@@ -19,11 +20,10 @@ namespace _GAME.Scripts.FSM.BotStates
         private Transform     _targetTransform;
         private Vector3       _targetPosition;
 
-        private float           _lastTargetFindTime = 0f;
-        private float           _findTargetCooldown = 1f;
-        private Brick           _targetBrick;
-        private Floor           _currentFloor     => FloorManager.Instance.GetCurrentFloorObject();
-        private List<FloorGate> _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
+        private        Brick           _targetBrick;
+        private static Floor           _currentFloor     => FloorManager.Instance.GetCurrentFloorObject();
+        private        List<FloorGate> _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
+        private        float           _targetRecalculationTime = 2f;
 
         public BotMoveState(StateMachine stateMachine, Character character) :
             base(stateMachine, character) { }
@@ -33,6 +33,38 @@ namespace _GAME.Scripts.FSM.BotStates
             base.OnEnter();
 
             BrickSpawner.Instance.OnBricksSpawned += HandleBricksSpawned;
+
+            FindAndSetTarget();
+        }
+
+        public void RecalculateTarget()
+        {
+            this._targetBrick = null;
+            this._bot.currentTargetGateIndex = -1;
+            this._elapsedTime = _targetRecalculationTime;
+
+        }
+
+        private void FindAndSetTarget()
+        {
+            if (_currentFloor == null || _currentFloorGate == null || _currentFloorGate.Count == 0)
+            {
+                return;
+            }
+
+            if (this.currentTargetType >= 0)
+            {
+                GateTargetManager.Instance.ReleaseGate(this._bot.currentTargetGateIndex, this._bot);
+            }
+
+            this._bot.currentTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, this._currentFloorGate);
+
+            if (this._bot.currentTargetGateIndex >= 0)
+            {
+                GateTargetManager.Instance.ReleaseGate(this._bot.currentTargetGateIndex, this._bot);
+                this._targetPosition = _currentFloorGate[this._bot.currentTargetGateIndex].transform.position;
+                this._bot.SetDestination(this._targetPosition);
+            }
         }
 
         private void HandleBricksSpawned(BrickColor color, int count)
@@ -70,33 +102,46 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnUpdate();
 
-            if ((!BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks) || bricks.Count == 0)
-                && this._bot.brickStack.Count > 0)
+            if (this._bot.brickStack.Count >= 5)
             {
                 //set destination to floor
+                if (this._elapsedTime >= this._targetRecalculationTime)
+                {
+                    _elapsedTime = 0f;
+                    this.FindAndSetTarget();
+                }
+                if (this._bot.currentTargetGateIndex >= 0)
+                {
+                    this._bot.SetDestination(_currentFloorGate[this._bot.currentTargetGateIndex].transform.position);
+                    return;
+                }
             }
 
-            /*if (this._bot.navMeshAgent.velocity.sqrMagnitude <= 0.1f)
+            if (BrickSpawner.Instance._activeBricks.TryGetValue(_bot.characterColor, out var bricks) && bricks.Count > 0)
             {
-                this._stateMachine.ChangeState<BotIdleState>();
-            }*/
+                _targetBrick = FindNearestBrick();
+                if (_targetBrick != null)
+                {
+                    _targetPosition = _targetBrick.transform.position;
+                    _bot.SetDestination(_targetPosition);
+                }
 
-            this._targetBrick = FindNearestBrick();
-            if (this._targetBrick != null)
-            {
-                this._targetPosition = this._targetBrick.transform.position;
-                this._bot.SetDestination(this._targetPosition);
+                if (this._bot.HasReachedDestination())
+                {
+                    _targetBrick = null;
+                }
             }
 
-            if (this._bot.HasReachedDestination())
-            {
-                _targetBrick = null;
-            }
         }
 
         public override void OnExit()
         {
             base.OnExit();
+            if (_bot.currentTargetGateIndex >= 0)
+            {
+                GateTargetManager.Instance.ReleaseGate(_bot.currentTargetGateIndex, _bot);
+                _bot.currentTargetGateIndex = -1;
+            }
             BrickSpawner.Instance.OnBricksSpawned -= HandleBricksSpawned;
         }
     }
