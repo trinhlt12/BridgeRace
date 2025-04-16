@@ -10,19 +10,20 @@ namespace _GAME.Scripts.Character
 
     public class PlayerController : Character
     {
-        [SerializeField] private FloatingJoystick joystick;
-        public                   LayerMask        bridgeLayerMask;
-        public                   Rigidbody        rb;
-        public                  Vector3          _lastPosition;
+        [SerializeField] private FloatingJoystick    joystick;
+        public                   LayerMask           bridgeLayerMask;
+        public                   Vector3             _lastPosition;
+        public                   CharacterController characterController;
+        public                   Vector3             velocity;
 
         protected override void OnInit()
         {
             base.OnInit();
-
-            if (this.rb == null)
+            if (this.characterController == null)
             {
-                this.rb = this.GetComponent<Rigidbody>();
+                this.characterController = this.GetComponent<CharacterController>();
             }
+
             if (this._stateMachine != null)
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();

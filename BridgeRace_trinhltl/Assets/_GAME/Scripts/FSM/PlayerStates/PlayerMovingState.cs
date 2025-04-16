@@ -1,7 +1,9 @@
+using _GAME.Scripts.Character;
+using UnityEngine;
+
 namespace _GAME.Scripts.FSM.PlayerStates
 {
-    using _GAME.Scripts.Character;
-    using UnityEngine;
+    using Character = _GAME.Scripts.Character.Character;
 
     public class PlayerMovingState : BaseState
     {
@@ -10,15 +12,14 @@ namespace _GAME.Scripts.FSM.PlayerStates
         private bool    _isGrounded          = true;
         private float   _groundCheckDistance = 0.2f;
         private float   _slopeLimit          = 45f;
-        private float   _groundedGravity     = -1f;
-        private float   _maxAllowedSpeed     = 8f;
 
-        private float   _acceleration    = 15f;
-        private float   _deceleration    = 20f;
-        private Vector3 _currentVelocity = Vector3.zero;
-        private float   _airControl      = 0.7f;
-        private Vector3 _originalVelocity;
-        private Vector3 _currentPosition;
+        private float   _gravity          = -9.81f;
+        private float   _verticalVelocity = 0;
+        private float   _acceleration     = 15f;
+        private float   _deceleration     = 20f;
+        private Vector3 _currentVelocity  = Vector3.zero;
+        private float   _maxAllowedSpeed  = 8f;
+
         private Vector3 _originalPosition;
         private Vector3 _lastPosition;
 
@@ -29,11 +30,8 @@ namespace _GAME.Scripts.FSM.PlayerStates
         {
             base.OnEnter();
             _originalPosition = this._player.transform.position;
-            if (this._player != null && this._player.rb != null)
-            {
-                _currentVelocity       = this._player.rb.velocity;
-                this._originalVelocity = this._player.rb.velocity;
-            }
+            _currentVelocity  = Vector3.zero;
+            _verticalVelocity = 0;
         }
 
         public override void OnUpdate()
@@ -41,61 +39,14 @@ namespace _GAME.Scripts.FSM.PlayerStates
             base.OnUpdate();
 
             this._currentInput = this._player.GetMovementInput();
-            if (this._currentInput.magnitude < 0.1f || this._player.rb.velocity.magnitude < 0f)
+            if (this._currentInput.magnitude < 0.1f)
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();
-            }
-
-            Move(Time.deltaTime);
-
-        }
-
-        public override void OnFixedUpdate()
-        {
-            base.OnFixedUpdate();
-            if (this._player == null || this._player.rb == null)
-            {
                 return;
             }
 
-            UpdateGroundState();
-            RotateTowardsMoveDirection();
-        }
-
-        private void UpdateGroundState()
-        {
-            RaycastHit hit;
-            var    rayStart = this._player.transform.position + Vector3.up * 0.1f;
-
-            _isGrounded = Physics.Raycast(
-                rayStart,
-                Vector3.down,
-                out hit,
-                _groundCheckDistance + 0.1f
-            );
-
-            Debug.DrawRay(
-                rayStart,
-                Vector3.down * (_groundCheckDistance + 0.1f),
-                _isGrounded ? Color.green : Color.red
-            );
-
-            if (_isGrounded)
-            {
-                _groundNormal = hit.normal;
-
-                var slopeAngle = Vector3.Angle(_groundNormal, Vector3.up);
-
-                if (slopeAngle > _slopeLimit)
-                {
-                    _isGrounded   = false;
-                    _groundNormal = Vector3.up;
-                }
-            }
-            else
-            {
-                _groundNormal = Vector3.up;
-            }
+            Move(Time.deltaTime);
+            this._player._lastPosition = this._player.transform.position;
         }
 
         private void Move(float deltaTime)
@@ -105,46 +56,38 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 return;
             }
 
+            _lastPosition = this._player.transform.position;
+
             var moveDirection = new Vector3(this._currentInput.x, 0, this._currentInput.y).normalized;
-            this._player._lastPosition = this._player.transform.position;
 
-            if (_isGrounded)
+            _isGrounded = this._player.characterController.isGrounded;
+
+            if (_isGrounded && _verticalVelocity < 0)
             {
-                moveDirection = Vector3.ProjectOnPlane(moveDirection, _groundNormal).normalized;
-            }
-
-            var originalPosition = this._player.transform.position;
-            var targetVelocity  = moveDirection * this._player.moveSpeed;
-
-            if (_isGrounded)
-            {
-                if (moveDirection.magnitude > 0.1f)
-                {
-                    _currentVelocity = Vector3.Lerp(
-                        _currentVelocity,
-                        targetVelocity,
-                        _acceleration * deltaTime
-                    );
-                }
-                else
-                {
-                    _currentVelocity = Vector3.Lerp(
-                        _currentVelocity,
-                        Vector3.zero,
-                        _deceleration * deltaTime
-                    );
-                }
+                _verticalVelocity = -2f;
             }
             else
             {
-                var horizontalVel = new Vector3(_currentVelocity.x, 0, _currentVelocity.z);
-                horizontalVel = Vector3.Lerp(
-                    horizontalVel,
-                    targetVelocity * _airControl,
-                    _acceleration * _airControl * deltaTime
-                );
+                _verticalVelocity += _gravity * deltaTime;
+            }
 
-                _currentVelocity = new Vector3(horizontalVel.x, _currentVelocity.y, horizontalVel.z);
+            var targetVelocity = moveDirection * this._player.moveSpeed;
+
+            if (moveDirection.magnitude > 0.1f)
+            {
+                _currentVelocity = Vector3.Lerp(
+                    _currentVelocity,
+                    targetVelocity,
+                    _acceleration * deltaTime
+                );
+            }
+            else
+            {
+                _currentVelocity = Vector3.Lerp(
+                    _currentVelocity,
+                    Vector3.zero,
+                    _deceleration * deltaTime
+                );
             }
 
             var horizontalSpeed = new Vector3(_currentVelocity.x, 0, _currentVelocity.z).magnitude;
@@ -158,8 +101,13 @@ namespace _GAME.Scripts.FSM.PlayerStates
                 );
             }
 
-            this._player.transform.Translate(_currentVelocity * deltaTime, Space.World);
+            var finalVelocity = _currentVelocity + new Vector3(0, _verticalVelocity, 0);
 
+            this._player.characterController.Move(finalVelocity * deltaTime);
+
+            this._player.velocity = finalVelocity;
+
+            RotateTowardsMoveDirection();
         }
 
         private void RotateTowardsMoveDirection()
@@ -168,29 +116,19 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
             if (movementDirection.magnitude > 0.1f)
             {
-                var targetRotation = Quaternion.LookRotation(movementDirection.normalized, _groundNormal);
+                var targetRotation = Quaternion.LookRotation(movementDirection.normalized);
 
                 this._player.transform.rotation = Quaternion.Slerp(
                     this._player.transform.rotation,
                     targetRotation,
-                    this._player.rotationSpeed * Time.fixedDeltaTime
+                    this._player.rotationSpeed * Time.deltaTime
                 );
             }
         }
 
-
-
-
-
         public override void OnExit()
         {
             base.OnExit();
-
-            if (this._player == null || this._player.rb == null)
-            {
-                return;
-            }
-
             this._currentInput = Vector2.zero;
         }
     }

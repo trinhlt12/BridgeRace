@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2963868821162461858}
-  - component: {fileID: 4276878094837953409}
   - component: {fileID: 91795597879672460}
   - component: {fileID: 3019618620785137701}
   - component: {fileID: 4703940741214114050}
-  m_Layer: 0
+  - component: {fileID: 6478259952571263436}
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -37,33 +37,6 @@ Transform:
   - {fileID: 7888914944121831172}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &4276878094837953409
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 211102514613379356}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 80
-  m_CollisionDetection: 0
 --- !u!136 &91795597879672460
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -112,11 +85,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stateMachine: {fileID: 3019618620785137701}
-  rb: {fileID: 0}
-  animator: {fileID: 8435407392929364845}
-  joystick: {fileID: 0}
-  moveSpeed: 5
+  BrickHolder: {fileID: 7888914944121831172}
+  characterColor: 0
+  moveSpeed: 7
   rotationSpeed: 10
+  animator: {fileID: 8435407392929364845}
+  _renderer: {fileID: 6052832980225773195}
+  _currentBridgeStep: {fileID: 0}
+  joystick: {fileID: 0}
+  bridgeLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  _lastPosition: {x: 0, y: 0, z: 0}
+  characterController: {fileID: 0}
+  velocity: {x: 0, y: 0, z: 0}
+--- !u!143 &6478259952571263436
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211102514613379356}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5434086689098611687
 GameObject:
   m_ObjectHideFlags: 0
@@ -229,6 +237,12 @@ PrefabInstance:
 --- !u!4 &2589774845768098071 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6161686391465202174, guid: ed84b15b632f06b45978ed64721ae6c6,
+    type: 3}
+  m_PrefabInstance: {fileID: 8534901427021787369}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &6052832980225773195 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2706087397073616482, guid: ed84b15b632f06b45978ed64721ae6c6,
     type: 3}
   m_PrefabInstance: {fileID: 8534901427021787369}
   m_PrefabAsset: {fileID: 0}
