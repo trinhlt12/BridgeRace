@@ -41,7 +41,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
             base.OnUpdate();
 
             this._currentInput = this._player.GetMovementInput();
-            if (this._currentInput.magnitude < 0.1f)
+            if (this._currentInput.magnitude < 0.1f || this._player.rb.velocity.magnitude < 0f)
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();
             }
@@ -190,9 +190,6 @@ namespace _GAME.Scripts.FSM.PlayerStates
             {
                 return;
             }
-
-            Vector3 currentVel = this._player.rb.velocity;
-            this._player.rb.velocity = new Vector3(currentVel.x * 0.5f, currentVel.y, currentVel.z * 0.5f);
 
             this._currentInput = Vector2.zero;
         }

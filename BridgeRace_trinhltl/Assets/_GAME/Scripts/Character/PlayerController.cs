@@ -15,10 +15,14 @@ namespace _GAME.Scripts.Character
         public                   Rigidbody        rb;
         public                  Vector3          _lastPosition;
 
-
         protected override void OnInit()
         {
             base.OnInit();
+
+            if (this.rb == null)
+            {
+                this.rb = this.GetComponent<Rigidbody>();
+            }
             if (this._stateMachine != null)
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();
@@ -87,6 +91,7 @@ namespace _GAME.Scripts.Character
         public bool IsMovingDownTheBridge()
         {
             var playerVelocity = this.transform.position - this._lastPosition;
+            if (playerVelocity.magnitude <= 0.1f) return false;
             var rayStart      = this.transform.position + Vector3.up * 0.1f;
             var rayDirection  = Vector3.down;
             var rayDistance   = 1.5f;
@@ -120,6 +125,8 @@ namespace _GAME.Scripts.Character
         public bool CanMove()
         {
             if (!IsOnBridge || this.IsMovingDownTheBridge()) return true;
+
+            if (this._currentBridgeStep == null) return true;
 
             var isColorMatch = _currentBridgeStep.IsColorMatch(this.characterColor);
 

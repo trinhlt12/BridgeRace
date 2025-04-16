@@ -13,8 +13,6 @@ namespace _GAME.Scripts.FSM.PlayerStates
         public override void OnEnter()
         {
             base.OnEnter();
-            this._player.rb.velocity = Vector3.zero;
-            this._player.rb.angularVelocity = Vector3.zero;
         }
 
         public override void OnUpdate()
