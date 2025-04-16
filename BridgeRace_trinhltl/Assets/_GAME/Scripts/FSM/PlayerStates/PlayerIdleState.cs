@@ -19,7 +19,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
         {
             base.OnUpdate();
             var input = this._player.GetMovementInput();
-            if (input.magnitude > 0.1f)
+            if (input.magnitude >= 0.1f)
             {
                 this._stateMachine.ChangeState<PlayerMovingState>();
             }

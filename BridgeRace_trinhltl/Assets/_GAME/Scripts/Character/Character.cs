@@ -23,8 +23,9 @@ namespace _GAME.Scripts.Character
 
         public readonly                             Stack<Brick> brickStack = new Stack<Brick>(); //stack of bricks
 
-        private bool _isOnBridge;
-        public BridgeStep _currentBridgeStep;
+        private bool       _isOnBridge;
+        public  BridgeStep _currentBridgeStep;
+        public Vector3    _currentBridgeForward;
 
         public bool IsOnBridge { get => _isOnBridge; set => _isOnBridge = value; } //is the character on the bridge
         //brick count
@@ -46,16 +47,18 @@ namespace _GAME.Scripts.Character
             this.OnInit();
         }
 
-        private void OnCollisionEnter(Collision other)
+        private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag("Bridge"))
             {
                 this.IsOnBridge = true;
                 this._currentBridgeStep = other.gameObject.GetComponentInChildren<BridgeStep>();
+                this._currentBridgeForward = other.gameObject.transform.forward;
+
             }
         }
 
-        private void OnCollisionExit(Collision other)
+        private void OnTriggerExit(Collider other)
         {
             if (other.gameObject.CompareTag("Bridge"))
             {
@@ -85,14 +88,6 @@ namespace _GAME.Scripts.Character
                 {
                     this._renderer.material = material;
                 }
-                else
-                {
-                    Debug.LogWarning($"Material for color {color} not found!");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Character renderer or MaterialManager not found!");
             }
         }
 
