@@ -1,5 +1,6 @@
 namespace _GAME.Scripts.FSM.BotStates
 {
+    using System.Collections.Generic;
     using _GAME.Scripts.Character;
     using _GAME.Scripts.Floor;
     using _GAME.Scripts.FSM.Brick;
@@ -18,11 +19,11 @@ namespace _GAME.Scripts.FSM.BotStates
         private Transform     _targetTransform;
         private Vector3       _targetPosition;
 
-        private float     _lastTargetFindTime = 0f;
-        private float     _findTargetCooldown = 1f;
-        private Brick     _targetBrick;
-        private Floor     _currentFloor     => FloorManager.Instance.GetCurrentFloorObject();
-        private FloorGate _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
+        private float           _lastTargetFindTime = 0f;
+        private float           _findTargetCooldown = 1f;
+        private Brick           _targetBrick;
+        private Floor           _currentFloor     => FloorManager.Instance.GetCurrentFloorObject();
+        private List<FloorGate> _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
 
         public BotMoveState(StateMachine stateMachine, Character character) :
             base(stateMachine, character) { }
@@ -72,7 +73,7 @@ namespace _GAME.Scripts.FSM.BotStates
             if ((!BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks) || bricks.Count == 0)
                 && this._bot.brickStack.Count > 0)
             {
-                _bot.SetDestination(this._currentFloorGate.transform.position);
+                //set destination to floor
             }
 
             /*if (this._bot.navMeshAgent.velocity.sqrMagnitude <= 0.1f)

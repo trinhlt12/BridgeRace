@@ -11,7 +11,7 @@ namespace _GAME.Scripts.Floor
     {
         [SerializeField] private SpawnPointGenerator _spawnPointGenerator;
         [SerializeField] private List<Character>     charactersOnFloor = new List<Character>();
-        public FloorGate           floorGate;
+        public List<FloorGate>           floorGate;
         private                  bool                _isActive = false;
         public                   Transform           _brickParent;
 
