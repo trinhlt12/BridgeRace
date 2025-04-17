@@ -20,7 +20,7 @@ namespace _GAME.Scripts.Character
 
             navMeshAgent = GetComponent<NavMeshAgent>();
 
-            this.navMeshAgent.speed        = this.moveSpeed;
+            /*this.navMeshAgent.speed        = this.moveSpeed;*/
             this.navMeshAgent.angularSpeed = this.rotationSpeed * 10f;
 
             if (this._stateMachine != null)
@@ -42,11 +42,28 @@ namespace _GAME.Scripts.Character
             }
         }
 
+        public void StopAgent(bool stop)
+        {
+            if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+            {
+                this.navMeshAgent.isStopped = stop;
+            }
+        }
+
         public void SetDestination(Vector3 destination)
         {
             if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
             {
+                StopAgent(false);
                 this.navMeshAgent.SetDestination(destination);
+            }
+        }
+
+        public void ResetDestination()
+        {
+            if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+            {
+                this.navMeshAgent.ResetPath();
             }
         }
 
@@ -79,7 +96,6 @@ namespace _GAME.Scripts.Character
             {
                 moveState.RecalculateTarget();
             }
-
         }
     }
 }

@@ -143,7 +143,7 @@ PrefabInstance:
     - target: {fileID: 587584197619166608, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.797434
+      value: 11.56
       objectReference: {fileID: 0}
     - target: {fileID: 587584197619166608, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
@@ -506,7 +506,7 @@ PrefabInstance:
     - target: {fileID: 587584197619166608, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.797434
+      value: 11.56
       objectReference: {fileID: 0}
     - target: {fileID: 587584197619166608, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
@@ -741,7 +741,7 @@ PrefabInstance:
     - target: {fileID: 587584197619166608, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.797434
+      value: 11.56
       objectReference: {fileID: 0}
     - target: {fileID: 587584197619166608, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
@@ -1413,7 +1413,7 @@ PrefabInstance:
     - target: {fileID: 5718905870933828900, guid: 7d2e8bf30f9a9eb44872687df4935b4a,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 27.87
+      value: 31.22
       objectReference: {fileID: 0}
     - target: {fileID: 5718905870933828900, guid: 7d2e8bf30f9a9eb44872687df4935b4a,
         type: 3}
@@ -1580,6 +1580,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bot
+      objectReference: {fileID: 0}
+    - target: {fileID: 7710758564102539090, guid: e13009fa7fd9e3042ab3c9321b4ac629,
+        type: 3}
+      propertyPath: m_AutoTraverseOffMeshLink
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8409968163074662316, guid: e13009fa7fd9e3042ab3c9321b4ac629,
         type: 3}

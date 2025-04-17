@@ -51,8 +51,7 @@ namespace _GAME.Scripts.FSM.BotStates
                 return;
             }
 
-            if (_bot.currentTargetGateIndex >= 0 &&
-                GateTargetManager.Instance.IsGateReservedForBot(_bot.currentTargetGateIndex, _bot))
+            if (_bot.currentTargetGateIndex >= 0 && GateTargetManager.Instance.IsGateReservedForBot(_bot.currentTargetGateIndex, _bot))
             {
                 return;
             }
@@ -83,7 +82,7 @@ namespace _GAME.Scripts.FSM.BotStates
         private Brick FindNearestBrick()
         {
             Brick nearestBrick = null;
-            float minDistance  = float.MaxValue;
+            var minDistance  = float.MaxValue;
 
             if (BrickSpawner.Instance != null && BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks))
             {
@@ -107,6 +106,13 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnUpdate();
 
+            if (!this._bot.CanMove())
+            {
+                this._bot.StopAgent(true);
+                this._bot.ResetDestination();
+                this.MoveToNearestBrick();
+            }
+
             if (_bot.brickStack.Count >= 5 && _bot.currentTargetGateIndex >= 0)
             {
                 _bot.SetDestination(_currentFloorGate[_bot.currentTargetGateIndex].transform.position);
@@ -121,7 +127,11 @@ namespace _GAME.Scripts.FSM.BotStates
                     FindAndSetTarget();
                 }
             }
+            this.MoveToNearestBrick();
+        }
 
+        private void MoveToNearestBrick()
+        {
             if (BrickSpawner.Instance._activeBricks.TryGetValue(_bot.characterColor, out var bricks) && bricks.Count > 0)
             {
                 _targetBrick = FindNearestBrick();
