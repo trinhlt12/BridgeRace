@@ -16,14 +16,12 @@ namespace _GAME.Scripts.FSM.BotStates
 
     public class BotMoveState : BaseState
     {
-        private BotTargetType currentTargetType = BotTargetType.Idle;
         private Transform     _targetTransform;
         private Vector3       _targetPosition;
 
         private        Brick           _targetBrick;
         private static Floor           _currentFloor     => FloorManager.Instance.GetCurrentFloorObject();
-        private        List<FloorGate> _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
-        private        float           _targetRecalculationTime = 2f;
+        private static List<FloorGate> _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
 
         public BotMoveState(StateMachine stateMachine, Character character) :
             base(stateMachine, character) { }
@@ -35,71 +33,6 @@ namespace _GAME.Scripts.FSM.BotStates
             BrickSpawner.Instance.OnBricksSpawned += HandleBricksSpawned;
 
             FindAndSetTarget();
-        }
-
-        public void RecalculateTarget()
-        {
-            this._targetBrick                = null;
-            this._bot.currentTargetGateIndex = -1;
-            this._elapsedTime                = _targetRecalculationTime;
-        }
-
-        private void FindAndSetTarget()
-        {
-            if (_currentFloor == null || _currentFloorGate == null || _currentFloorGate.Count == 0)
-            {
-                return;
-            }
-
-            if (_bot.currentTargetGateIndex >= 0 && GateTargetManager.Instance.IsGateReservedForBot(_bot.currentTargetGateIndex, _bot))
-            {
-                return;
-            }
-
-            if (_bot.currentTargetGateIndex >= 0)
-            {
-                GateTargetManager.Instance.ReleaseGate(_bot.currentTargetGateIndex, _bot);
-            }
-
-            this._bot.currentTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, this._currentFloorGate);
-
-            if (this._bot.currentTargetGateIndex >= 0)
-            {
-                GateTargetManager.Instance.ReserveGate(_bot.currentTargetGateIndex, _bot);
-                this._targetPosition = _currentFloorGate[this._bot.currentTargetGateIndex].transform.position;
-                this._bot.SetDestination(this._targetPosition);
-            }
-        }
-
-        private void HandleBricksSpawned(BrickColor color, int count)
-        {
-            if (color == this._bot.characterColor && this._targetBrick == null)
-            {
-                _targetBrick = FindNearestBrick();
-            }
-        }
-
-        private Brick FindNearestBrick()
-        {
-            Brick nearestBrick = null;
-            var minDistance  = float.MaxValue;
-
-            if (BrickSpawner.Instance != null && BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks))
-            {
-                foreach (var brick in bricks)
-                {
-                    if (brick != null && brick.gameObject.activeInHierarchy)
-                    {
-                        var distance = Vector3.Distance(this._bot.transform.position, brick.transform.position);
-                        if (distance < minDistance)
-                        {
-                            minDistance  = distance;
-                            nearestBrick = brick;
-                        }
-                    }
-                }
-            }
-            return nearestBrick;
         }
 
         public override void OnUpdate()
@@ -121,13 +54,73 @@ namespace _GAME.Scripts.FSM.BotStates
 
             if (_bot.brickStack.Count >= 5 && _bot.currentTargetGateIndex < 0)
             {
-                if (_elapsedTime >= _targetRecalculationTime)
-                {
-                    _elapsedTime = 0f;
-                    FindAndSetTarget();
-                }
+                FindAndSetTarget();
             }
             this.MoveToNearestBrick();
+        }
+
+        public void RecalculateTarget()
+        {
+            this._targetBrick                = null;
+            this._bot.currentTargetGateIndex = -1;
+        }
+
+        private void FindAndSetTarget()
+        {
+            if (_currentFloor == null || _currentFloorGate == null || _currentFloorGate.Count == 0)
+            {
+                return;
+            }
+
+            if (_bot.currentTargetGateIndex >= 0 && GateTargetManager.Instance.IsGateReservedForBot(_bot.currentTargetGateIndex, _bot))
+            {
+                return;
+            }
+
+            if (_bot.currentTargetGateIndex >= 0)
+            {
+                GateTargetManager.Instance.ReleaseGate(_bot.currentTargetGateIndex, _bot);
+            }
+
+            this._bot.currentTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, _currentFloorGate);
+
+            if (this._bot.currentTargetGateIndex >= 0)
+            {
+                GateTargetManager.Instance.ReserveGate(_bot.currentTargetGateIndex, _bot);
+                this._targetPosition = _currentFloorGate[this._bot.currentTargetGateIndex].transform.position;
+                this._bot.SetDestination(this._targetPosition);
+            }
+        }
+
+        private void HandleBricksSpawned(BrickColor color, int count)
+        {
+            if (color == this._bot.characterColor && this._targetBrick == null)
+            {
+                _targetBrick = FindNearestBrick();
+            }
+        }
+
+        private Brick FindNearestBrick()
+        {
+            Brick nearestBrick = null;
+            var   minDistance  = float.MaxValue;
+
+            if (BrickSpawner.Instance != null && BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks))
+            {
+                foreach (var brick in bricks)
+                {
+                    if (brick != null && brick.gameObject.activeInHierarchy)
+                    {
+                        var distance = Vector3.Distance(this._bot.transform.position, brick.transform.position);
+                        if (distance < minDistance)
+                        {
+                            minDistance  = distance;
+                            nearestBrick = brick;
+                        }
+                    }
+                }
+            }
+            return nearestBrick;
         }
 
         private void MoveToNearestBrick()
@@ -157,6 +150,17 @@ namespace _GAME.Scripts.FSM.BotStates
                 _bot.currentTargetGateIndex = -1;
             }
             BrickSpawner.Instance.OnBricksSpawned -= HandleBricksSpawned;
+        }
+
+        private void CheckSlope()
+        {
+            if (_bot.currentBridge != null)
+            {
+                var slope = Vector3.Angle(Vector3.up, _bot.currentBridge.transform.up);
+                if (slope > 45f)
+                {
+                }
+            }
         }
     }
 }

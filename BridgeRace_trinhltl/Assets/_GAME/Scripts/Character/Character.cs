@@ -14,8 +14,7 @@ namespace _GAME.Scripts.Character
         [SerializeField] private   Transform    BrickHolder;
 
         public BrickColor characterColor;
-        public float      moveSpeed     = 5f;
-        public float      rotationSpeed = 10f;
+
 
         public                                       Animator           animator;
         [SerializeField]                     private Renderer           _renderer;
@@ -28,6 +27,8 @@ namespace _GAME.Scripts.Character
         public Vector3    _currentBridgeForward;
 
         public bool IsOnBridge { get => _isOnBridge; set => _isOnBridge = value; } //is the character on the bridge
+
+        public Bridge currentBridge;
         //brick count
 
         protected virtual void Awake()
@@ -51,6 +52,7 @@ namespace _GAME.Scripts.Character
         {
             if (other.gameObject.CompareTag("Bridge"))
             {
+                this.currentBridge = other.gameObject.GetComponent<Bridge>();
                 this.IsOnBridge = true;
                 this._currentBridgeStep = other.gameObject.GetComponentInChildren<BridgeStep>();
                 this._currentBridgeForward = other.gameObject.transform.forward;
@@ -62,6 +64,7 @@ namespace _GAME.Scripts.Character
         {
             if (other.gameObject.CompareTag("Bridge"))
             {
+                this.currentBridge = null;
                 this.IsOnBridge = false;
                 _currentBridgeStep = null;
             }

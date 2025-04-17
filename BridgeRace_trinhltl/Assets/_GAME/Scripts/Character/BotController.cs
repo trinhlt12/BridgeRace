@@ -20,9 +20,6 @@ namespace _GAME.Scripts.Character
 
             navMeshAgent = GetComponent<NavMeshAgent>();
 
-            /*this.navMeshAgent.speed        = this.moveSpeed;*/
-            this.navMeshAgent.angularSpeed = this.rotationSpeed * 10f;
-
             if (this._stateMachine != null)
             {
                 this._stateMachine.ChangeState<BotMoveState>();

@@ -11,6 +11,8 @@ namespace _GAME.Scripts.Character
     public class PlayerController : Character
     {
         [SerializeField] private FloatingJoystick    joystick;
+        public                   float               moveSpeed     = 5f;
+        public                   float               rotationSpeed = 10f;
         public                   LayerMask           bridgeLayerMask;
         public                   Vector3             _lastPosition;
         public                   CharacterController characterController;
