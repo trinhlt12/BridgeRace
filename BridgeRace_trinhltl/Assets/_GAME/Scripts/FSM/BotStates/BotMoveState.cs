@@ -39,10 +39,9 @@ namespace _GAME.Scripts.FSM.BotStates
 
         public void RecalculateTarget()
         {
-            this._targetBrick = null;
+            this._targetBrick                = null;
             this._bot.currentTargetGateIndex = -1;
-            this._elapsedTime = _targetRecalculationTime;
-
+            this._elapsedTime                = _targetRecalculationTime;
         }
 
         private void FindAndSetTarget()
@@ -52,16 +51,22 @@ namespace _GAME.Scripts.FSM.BotStates
                 return;
             }
 
-            if (this.currentTargetType >= 0)
+            if (_bot.currentTargetGateIndex >= 0 &&
+                GateTargetManager.Instance.IsGateReservedForBot(_bot.currentTargetGateIndex, _bot))
             {
-                GateTargetManager.Instance.ReleaseGate(this._bot.currentTargetGateIndex, this._bot);
+                return;
+            }
+
+            if (_bot.currentTargetGateIndex >= 0)
+            {
+                GateTargetManager.Instance.ReleaseGate(_bot.currentTargetGateIndex, _bot);
             }
 
             this._bot.currentTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, this._currentFloorGate);
 
             if (this._bot.currentTargetGateIndex >= 0)
             {
-                GateTargetManager.Instance.ReleaseGate(this._bot.currentTargetGateIndex, this._bot);
+                GateTargetManager.Instance.ReserveGate(_bot.currentTargetGateIndex, _bot);
                 this._targetPosition = _currentFloorGate[this._bot.currentTargetGateIndex].transform.position;
                 this._bot.SetDestination(this._targetPosition);
             }
@@ -102,18 +107,18 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnUpdate();
 
-            if (this._bot.brickStack.Count >= 5)
+            if (_bot.brickStack.Count >= 5 && _bot.currentTargetGateIndex >= 0)
             {
-                //set destination to floor
-                if (this._elapsedTime >= this._targetRecalculationTime)
+                _bot.SetDestination(_currentFloorGate[_bot.currentTargetGateIndex].transform.position);
+                return;
+            }
+
+            if (_bot.brickStack.Count >= 5 && _bot.currentTargetGateIndex < 0)
+            {
+                if (_elapsedTime >= _targetRecalculationTime)
                 {
                     _elapsedTime = 0f;
-                    this.FindAndSetTarget();
-                }
-                if (this._bot.currentTargetGateIndex >= 0)
-                {
-                    this._bot.SetDestination(_currentFloorGate[this._bot.currentTargetGateIndex].transform.position);
-                    return;
+                    FindAndSetTarget();
                 }
             }
 
@@ -131,7 +136,6 @@ namespace _GAME.Scripts.FSM.BotStates
                     _targetBrick = null;
                 }
             }
-
         }
 
         public override void OnExit()

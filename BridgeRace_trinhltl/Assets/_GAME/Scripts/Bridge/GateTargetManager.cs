@@ -69,5 +69,10 @@ namespace _GAME.Scripts.FSM.Bridge
             }
             return bestGateIndex;
         }
+
+        public bool IsGateReservedForBot(int gateIndex, BotController bot)
+        {
+            return _reservedGates.TryGetValue(gateIndex, out var reservedBot) && reservedBot == bot;
+        }
     }
 }
