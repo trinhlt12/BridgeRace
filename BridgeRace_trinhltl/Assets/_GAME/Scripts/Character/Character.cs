@@ -168,5 +168,35 @@ namespace _GAME.Scripts.Character
             }
         }
 
+        public bool CanMove()
+        {
+            if (!IsOnBridge) return true;
+
+            if (this is PlayerController player && player.IsMovingDownTheBridge())
+            {
+                return true;
+            }
+
+            if (this._currentBridgeStep == null) return true;
+
+            var isColorMatch = _currentBridgeStep.IsColorMatch(this.characterColor);
+
+            if (!isColorMatch)
+            {
+                if (BrickCount <= 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
     }
 }

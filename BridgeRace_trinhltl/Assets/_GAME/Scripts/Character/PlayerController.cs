@@ -55,7 +55,6 @@ namespace _GAME.Scripts.Character
 
         public bool IsMovingDownTheBridge()
         {
-            /*var playerVelocity = this.transform.position - this._lastPosition;*/
             var inputDirection = this.GetMoveDirection();
             if (inputDirection.magnitude < 0.1f) return false;
 
@@ -89,29 +88,5 @@ namespace _GAME.Scripts.Character
             return new Vector3(this.GetMovementInput().x, 0, this.GetMovementInput().y).normalized;
         }
 
-        public bool CanMove()
-        {
-            if (!IsOnBridge || this.IsMovingDownTheBridge()) return true;
-
-            if (this._currentBridgeStep == null) return true;
-
-            var isColorMatch = _currentBridgeStep.IsColorMatch(this.characterColor);
-
-            if (!isColorMatch)
-            {
-                if (BrickCount <= 0)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                return true;
-            }
-        }
     }
 }

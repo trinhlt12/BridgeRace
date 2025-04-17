@@ -39,6 +39,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
             base.OnUpdate();
 
             this._currentInput = this._player.GetMovementInput();
+
             if (this._currentInput.magnitude < 0.1f)
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();
