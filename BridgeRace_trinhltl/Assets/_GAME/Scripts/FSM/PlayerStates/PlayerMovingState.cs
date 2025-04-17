@@ -51,7 +51,7 @@ namespace _GAME.Scripts.FSM.PlayerStates
 
         private void Move(float deltaTime)
         {
-            if (!this._player.CanMove())
+            if (!this._player.CanMove()  || !this._player.IsMovingDownTheBridge())
             {
                 return;
             }

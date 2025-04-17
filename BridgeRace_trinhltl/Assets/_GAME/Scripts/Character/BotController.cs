@@ -20,7 +20,6 @@ namespace _GAME.Scripts.Character
 
             navMeshAgent = GetComponent<NavMeshAgent>();
 
-            this.navMeshAgent.speed        = this.moveSpeed;
             this.navMeshAgent.angularSpeed = this.rotationSpeed * 10f;
 
             if (this._stateMachine != null)
@@ -44,6 +43,7 @@ namespace _GAME.Scripts.Character
 
         public void SetDestination(Vector3 destination)
         {
+            if(!this.CanMove()) return;
             if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
             {
                 this.navMeshAgent.SetDestination(destination);

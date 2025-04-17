@@ -17,15 +17,15 @@ namespace _GAME.Scripts.Character
         public float      moveSpeed     = 5f;
         public float      rotationSpeed = 10f;
 
-        public                                       Animator           animator;
-        [SerializeField]                     private Renderer           _renderer;
-        public                                       int                BrickCount => this.brickStack.Count;
+        public                   Animator animator;
+        [SerializeField] private Renderer _renderer;
+        public                   int      BrickCount => this.brickStack.Count;
 
-        public readonly                             Stack<Brick> brickStack = new Stack<Brick>(); //stack of bricks
+        public readonly Stack<Brick> brickStack = new Stack<Brick>(); //stack of bricks
 
         private bool       _isOnBridge;
         public  BridgeStep _currentBridgeStep;
-        public Vector3    _currentBridgeForward;
+        public  Vector3    _currentBridgeForward;
 
         public bool IsOnBridge { get => _isOnBridge; set => _isOnBridge = value; } //is the character on the bridge
         //brick count
@@ -47,36 +47,6 @@ namespace _GAME.Scripts.Character
             this.OnInit();
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.gameObject.CompareTag("Bridge"))
-            {
-                this.IsOnBridge = true;
-                this._currentBridgeStep = other.gameObject.GetComponentInChildren<BridgeStep>();
-                this._currentBridgeForward = other.gameObject.transform.forward;
-
-            }
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (other.gameObject.CompareTag("Bridge"))
-            {
-                this.IsOnBridge = false;
-                _currentBridgeStep = null;
-            }
-        }
-
-        public bool IsOnSameColorStep()
-        {
-            if (this._currentBridgeStep == null || !IsOnBridge)
-            {
-                return true;
-            }
-            return this._currentBridgeStep.IsColorMatch(this.characterColor);
-        }
-
-
         public virtual void SetCharacterColor(BrickColor color)
         {
             this.characterColor = color;
@@ -94,6 +64,37 @@ namespace _GAME.Scripts.Character
         protected virtual void OnInit()
         {
             SetCharacterColor(characterColor);
+        }
+
+        private void Update()
+        {
+            CheckBridge();
+        }
+
+        protected void CheckBridge()
+        {
+            var bridgeLayerMask = LayerMask.GetMask("Bridge");
+            var rayStart     = this.transform.position + Vector3.up * 0.1f;
+            var rayDirection = Vector3.down;
+            var rayDistance  = 1.5f;
+
+            Debug.DrawRay(rayStart, rayDirection * rayDistance, IsOnBridge ? Color.green : Color.red);
+            if (Physics.Raycast(rayStart, rayDirection, out var hit, rayDistance, bridgeLayerMask))
+            {
+                var bridge = hit.collider.GetComponent<Bridge>();
+                if (bridge != null)
+                {
+                    var bridgeStep = bridge.GetComponentInChildren<BridgeStep>();
+                    SetOnBridge(true);
+                    GetCurrentBridgeStep(bridgeStep);
+                    GetBridgeForward(bridge.transform.forward);
+                }
+            }
+            else
+            {
+                IsOnBridge              = false;
+                this._currentBridgeStep = null;
+            }
         }
 
         protected abstract void InitializeStates();
@@ -123,7 +124,6 @@ namespace _GAME.Scripts.Character
             var brickCollider = brick.GetComponent<BoxCollider>();
             var brickHeight   = brickCollider.bounds.size.y;
             brickCollider.enabled = false;
-
 
             var brickVisual = brick.transform.GetChild(0);
 
@@ -168,5 +168,51 @@ namespace _GAME.Scripts.Character
             }
         }
 
+        public bool CanMove()
+        {
+            if (!IsOnBridge) return true;
+
+            if (this._currentBridgeStep == null) return true;
+
+            var isColorMatch = _currentBridgeStep.IsColorMatch(this.characterColor);
+
+            if (!isColorMatch)
+            {
+                if (BrickCount <= 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public void SetOnBridge(bool b)
+        {
+            this.IsOnBridge = b;
+        }
+
+        public void GetCurrentBridgeStep(BridgeStep currentBridgeStep)
+        {
+            if (currentBridgeStep != null)
+            {
+                this._currentBridgeStep = currentBridgeStep;
+            }
+            else
+            {
+                this._currentBridgeStep = null;
+            }
+        }
+
+        public void GetBridgeForward(Vector3 transformForward)
+        {
+            this._currentBridgeForward = transformForward;
+        }
     }
 }
