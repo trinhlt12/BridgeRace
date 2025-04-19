@@ -39,6 +39,11 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnUpdate();
 
+            if (!this._bot.IsMoving())
+            {
+                this._stateMachine.ChangeState<BotIdleState>();
+            }
+
             if (this._bot.IsOnBridge && !this._bot.CanMove())
             {
                 this._bot.StopAgent(true);

@@ -83,6 +83,37 @@ namespace _GAME.Scripts.Character
             return false;
         }
 
+        public bool IsMoving()
+        {
+            if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+            {
+                if(this.navMeshAgent.pathPending)
+                {
+                    return true;
+                }
+
+                if (!this.navMeshAgent.hasPath)
+                {
+                    return false;
+                }
+
+                if (this.navMeshAgent.isStopped)
+                {
+                    return false;
+                }
+                if (this.navMeshAgent.remainingDistance <= this.navMeshAgent.stoppingDistance)
+                {
+                    return false;
+                }
+                if(this.navMeshAgent.velocity.magnitude < 0.1f)
+                {
+                    return false;
+                }
+
+            }
+            return false;
+        }
+
         public int GetCurrentTargetGateIndex()
         {
             return this.currentTargetGateIndex;
