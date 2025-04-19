@@ -22,7 +22,7 @@ namespace _GAME.Scripts.Character
 
             if (this._stateMachine != null)
             {
-                this._stateMachine.ChangeState<BotMoveState>();
+                this._stateMachine.ChangeState<FindBrickState>();
             }
             else
             {
@@ -35,7 +35,8 @@ namespace _GAME.Scripts.Character
             if (this._stateMachine != null)
             {
                 this._stateMachine.AddState(new BotIdleState(this._stateMachine, character: this));
-                this._stateMachine.AddState(new BotMoveState(this._stateMachine, character: this));
+                this._stateMachine.AddState(new FindBrickState(this._stateMachine, character: this));
+                this._stateMachine.AddState(new FindGateState(this._stateMachine, character: this));
             }
         }
 
@@ -44,6 +45,8 @@ namespace _GAME.Scripts.Character
             if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
             {
                 this.navMeshAgent.isStopped = stop;
+                this.navMeshAgent.updatePosition = !stop;
+                this.navMeshAgent.updateRotation = !stop;
             }
         }
 
@@ -88,10 +91,10 @@ namespace _GAME.Scripts.Character
                 currentTargetGateIndex = -1;
             }
 
-            var moveState = this._stateMachine.GetState<BotMoveState>();
-            if (moveState != null)
+            var findGateState = this._stateMachine.GetState<FindGateState>();
+            if (findGateState != null)
             {
-                moveState.RecalculateTarget();
+                findGateState.RecalculateTarget();
             }
         }
     }

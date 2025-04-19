@@ -39,31 +39,29 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnUpdate();
 
-            if (!this._bot.CanMove())
+            if (this._bot.IsOnBridge && !this._bot.CanMove())
             {
                 this._bot.StopAgent(true);
-                this._bot.ResetDestination();
-                this.MoveToNearestBrick();
             }
 
-            if (_bot.brickStack.Count >= 5 && _bot.currentTargetGateIndex >= 0)
+            if (_bot.brickStack.Count >= 1 && _bot.currentTargetGateIndex >= 0 && this._bot.CanMove())
             {
                 _bot.SetDestination(_currentFloorGate[_bot.currentTargetGateIndex].transform.position);
                 return;
             }
 
-            if (_bot.brickStack.Count >= 5 && _bot.currentTargetGateIndex < 0)
+            if (_bot.brickStack.Count >= 1 && _bot.currentTargetGateIndex < 0)
             {
                 FindAndSetTarget();
             }
             this.MoveToNearestBrick();
         }
 
-        public void RecalculateTarget()
+        /*public void RecalculateTarget()
         {
             this._targetBrick                = null;
             this._bot.currentTargetGateIndex = -1;
-        }
+        }*/
 
         private void FindAndSetTarget()
         {
@@ -150,17 +148,6 @@ namespace _GAME.Scripts.FSM.BotStates
                 _bot.currentTargetGateIndex = -1;
             }
             BrickSpawner.Instance.OnBricksSpawned -= HandleBricksSpawned;
-        }
-
-        private void CheckSlope()
-        {
-            if (_bot.currentBridge != null)
-            {
-                var slope = Vector3.Angle(Vector3.up, _bot.currentBridge.transform.up);
-                if (slope > 45f)
-                {
-                }
-            }
         }
     }
 }
