@@ -34,6 +34,7 @@ namespace _GAME.Scripts.FSM.BotStates
             {
                 var destination = _currentFloorGate[_bot.currentTargetGateIndex].transform.position;
                 _bot.SetDestination(destination);
+                Debug.LogWarning($"Bot {this._bot.characterColor} is moving to gate {this._bot.currentTargetGateIndex} at position {destination}");
             }
         }
 
