@@ -10,7 +10,7 @@ namespace _GAME.Scripts.FSM.Bridge
     {
         public static GateTargetManager Instance { get; private set; }
 
-        private Dictionary<int, BotController> _reservedGates = new Dictionary<int, BotController>();
+        private readonly Dictionary<int, BotController> _reservedGates = new Dictionary<int, BotController>();
 
         private void Awake()
         {

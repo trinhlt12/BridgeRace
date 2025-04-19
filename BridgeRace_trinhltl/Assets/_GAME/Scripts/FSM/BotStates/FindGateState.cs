@@ -55,13 +55,17 @@ namespace _GAME.Scripts.FSM.BotStates
                 GateTargetManager.Instance.ReleaseGate(_bot.currentTargetGateIndex, _bot);
             }
 
-            this._bot.currentTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, _currentFloorGate);
+            var newTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, _currentFloorGate);
 
-            if (this._bot.currentTargetGateIndex >= 0)
+            if (newTargetGateIndex >= 0 && !GateTargetManager.Instance.IsGateReservedForBot(newTargetGateIndex, _bot))
             {
-                GateTargetManager.Instance.ReserveGate(_bot.currentTargetGateIndex, _bot);
-                this._targetPosition = _currentFloorGate[this._bot.currentTargetGateIndex].transform.position;
+                GateTargetManager.Instance.ReserveGate(newTargetGateIndex, _bot);
+                this._bot.currentTargetGateIndex = newTargetGateIndex;
+                this._targetPosition = _currentFloorGate[newTargetGateIndex].transform.position;
                 this._bot.SetDestination(this._targetPosition);
+            }else
+            {
+                this._bot.currentTargetGateIndex = -1;
             }
         }
     }
