@@ -21,7 +21,7 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnUpdate();
             this.MoveToNearestBrick();
-            if (this._bot.BrickCount >= 10)
+            if (this._bot.BrickCount >= 1)
             {
                 this._stateMachine.ChangeState<FindGateState>();
                 return;

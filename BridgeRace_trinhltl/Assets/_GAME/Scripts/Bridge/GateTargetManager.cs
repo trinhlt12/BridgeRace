@@ -74,5 +74,19 @@ namespace _GAME.Scripts.FSM.Bridge
         {
             return _reservedGates.TryGetValue(gateIndex, out var reservedBot) && reservedBot == bot;
         }
+
+        private void Update()
+        {
+            this.DebugReservedGates();
+        }
+
+        public void DebugReservedGates()
+        {
+            if(_reservedGates.Count <= 0) return;
+            foreach (var kvp in _reservedGates)
+            {
+                Debug.Log($"Gate {kvp.Key} is reserved for bot {kvp.Value.name}");
+            }
+        }
     }
 }

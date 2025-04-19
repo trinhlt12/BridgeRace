@@ -195,6 +195,11 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: 7254671d6ee95284397372ed6fd5a4c1, type: 2}
+    - target: {fileID: 2324785332801954631, guid: 4412507d4d6563844892f4b99afef73f,
+        type: 3}
+      propertyPath: m_Name
+      value: FloorGate2
+      objectReference: {fileID: 0}
     - target: {fileID: 2602626653428397000, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
       propertyPath: m_Name
@@ -563,6 +568,11 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 4300000, guid: 70322ba236902fd4d9bcdbdef3bb5ab6, type: 2}
+    - target: {fileID: 2324785332801954631, guid: 4412507d4d6563844892f4b99afef73f,
+        type: 3}
+      propertyPath: m_Name
+      value: FloorGate3
+      objectReference: {fileID: 0}
     - target: {fileID: 2602626653428397000, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}
       propertyPath: m_Name
@@ -792,6 +802,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2324785332801954631, guid: 4412507d4d6563844892f4b99afef73f,
+        type: 3}
+      propertyPath: m_Name
+      value: FloorGate1
       objectReference: {fileID: 0}
     - target: {fileID: 2602626653428397000, guid: 4412507d4d6563844892f4b99afef73f,
         type: 3}

@@ -33,8 +33,7 @@ namespace _GAME.Scripts.FSM.BotStates
             if ( _bot.currentTargetGateIndex >= 0)
             {
                 var destination = _currentFloorGate[_bot.currentTargetGateIndex].transform.position;
-                var offset = Vector3.forward * 0.5f;
-                _bot.SetDestination(destination + offset);
+                _bot.SetDestination(destination);
             }
         }
 

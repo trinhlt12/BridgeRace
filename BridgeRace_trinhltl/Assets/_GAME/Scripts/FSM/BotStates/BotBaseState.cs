@@ -14,7 +14,7 @@ namespace _GAME.Scripts.FSM.BotStates
 
         protected        Brick           _targetBrick;
         protected static Floor           _currentFloor     => FloorManager.Instance.GetCurrentFloorObject();
-        protected static List<FloorGate> _currentFloorGate => _currentFloor.GetComponent<Floor>().floorGate;
+        protected static List<FloorGate> _currentFloorGate => _currentFloor.floorGate;
 
         public BotBaseState(StateMachine stateMachine, Character character)
             : base(stateMachine, character) { }
