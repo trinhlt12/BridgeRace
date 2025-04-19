@@ -1503,16 +1503,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bot
       objectReference: {fileID: 0}
-    - target: {fileID: 7710758564102539090, guid: e13009fa7fd9e3042ab3c9321b4ac629,
-        type: 3}
-      propertyPath: m_AutoRepath
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7710758564102539090, guid: e13009fa7fd9e3042ab3c9321b4ac629,
-        type: 3}
-      propertyPath: m_Acceleration
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 8409968163074662316, guid: e13009fa7fd9e3042ab3c9321b4ac629,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -2,6 +2,7 @@ namespace _GAME.Scripts.FSM.BotStates
 {
     using _GAME.Scripts.Character;
     using _GAME.Scripts.FSM.Bridge;
+    using UnityEngine;
 
     public class FindGateState : BotBaseState
     {
@@ -32,7 +33,8 @@ namespace _GAME.Scripts.FSM.BotStates
             if ( _bot.currentTargetGateIndex >= 0)
             {
                 var destination = _currentFloorGate[_bot.currentTargetGateIndex].transform.position;
-                _bot.SetDestination(destination);
+                var offset = Vector3.forward * 0.5f;
+                _bot.SetDestination(destination + offset);
             }
         }
 
