@@ -100,8 +100,6 @@ namespace _GAME.Scripts.FSM.Brick
             {
                 SpawnBricksOfColorAtPoints(colorEntry.Key, colorEntry.Value);
             }
-
-            LogActiveBrickCounts();
         }
 
         private Dictionary<BrickColor, List<Vector3>> AllocateSpawnPointsForColors(HashSet<BrickColor> colors)
@@ -212,16 +210,6 @@ namespace _GAME.Scripts.FSM.Brick
             if (enabled == true) return;
 
             ClearAllBricks();
-        }
-
-        private void LogActiveBrickCounts()
-        {
-            var brickCounts = "Active bricks: ";
-            foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
-            {
-                brickCounts += $"{color}: {_activeBricks[color].Count}, ";
-            }
-            Debug.LogWarning(brickCounts);
         }
 
         public void RemoveBrick(Brick brick)
