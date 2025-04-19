@@ -11,6 +11,8 @@ namespace _GAME.Scripts.Character
     public class PlayerController : Character
     {
         [SerializeField] private FloatingJoystick    joystick;
+        public                   float               moveSpeed     = 5f;
+        public                   float               rotationSpeed = 10f;
         public                   LayerMask           bridgeLayerMask;
         public                   Vector3             _lastPosition;
         public                   CharacterController characterController;
@@ -49,20 +51,13 @@ namespace _GAME.Scripts.Character
             {
                 return Vector2.zero;
             }
-
             return new Vector2(joystick.Horizontal, joystick.Vertical);
         }
 
         public bool IsMovingDownTheBridge()
         {
-            if (!IsOnBridge) return true;
-
             var inputDirection = this.GetMoveDirection();
             if (inputDirection.magnitude < 0.1f) return false;
-
-            var rayStart     = this.transform.position + Vector3.up * 0.1f;
-            var rayDirection = Vector3.down;
-            var rayDistance  = 1.5f;
 
             var dotProduct = Vector3.Dot(inputDirection, this._currentBridgeForward);
 
@@ -89,7 +84,5 @@ namespace _GAME.Scripts.Character
         {
             return new Vector3(this.GetMovementInput().x, 0, this.GetMovementInput().y).normalized;
         }
-
-
     }
 }

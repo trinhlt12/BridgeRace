@@ -13,12 +13,12 @@ namespace _GAME.Scripts.FSM.PlayerStates
         private float   _groundCheckDistance = 0.2f;
         private float   _slopeLimit          = 45f;
 
-        private float   _gravity          = -9.81f;
-        private float   _verticalVelocity = 0;
-        private float   _acceleration     = 15f;
-        private float   _deceleration     = 20f;
-        private Vector3 _currentVelocity  = Vector3.zero;
-        private float   _maxAllowedSpeed  = 8f;
+        private readonly float   _gravity          = -9.81f;
+        private          float   _verticalVelocity = 0;
+        private          float   _acceleration     = 15f;
+        private          float   _deceleration     = 20f;
+        private          Vector3 _currentVelocity  = Vector3.zero;
+        private          float   _maxAllowedSpeed  = 8f;
 
         private Vector3 _originalPosition;
         private Vector3 _lastPosition;
@@ -38,7 +38,9 @@ namespace _GAME.Scripts.FSM.PlayerStates
         {
             base.OnUpdate();
 
+
             this._currentInput = this._player.GetMovementInput();
+
             if (this._currentInput.magnitude < 0.1f)
             {
                 this._stateMachine.ChangeState<PlayerIdleState>();

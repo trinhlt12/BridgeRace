@@ -10,7 +10,7 @@ namespace _GAME.Scripts.FSM.Bridge
     {
         public static GateTargetManager Instance { get; private set; }
 
-        private Dictionary<int, BotController> _reservedGates = new Dictionary<int, BotController>();
+        private readonly Dictionary<int, BotController> _reservedGates = new Dictionary<int, BotController>();
 
         private void Awake()
         {
@@ -73,6 +73,20 @@ namespace _GAME.Scripts.FSM.Bridge
         public bool IsGateReservedForBot(int gateIndex, BotController bot)
         {
             return _reservedGates.TryGetValue(gateIndex, out var reservedBot) && reservedBot == bot;
+        }
+
+        private void Update()
+        {
+            this.DebugReservedGates();
+        }
+
+        public void DebugReservedGates()
+        {
+            if(_reservedGates.Count <= 0) return;
+            foreach (var kvp in _reservedGates)
+            {
+                Debug.Log($"Gate {kvp.Key} is reserved for bot {kvp.Value.name}");
+            }
         }
     }
 }

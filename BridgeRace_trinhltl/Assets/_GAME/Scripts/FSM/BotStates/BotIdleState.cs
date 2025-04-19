@@ -12,9 +12,16 @@ namespace _GAME.Scripts.FSM.BotStates
         {
             base.OnEnter();
 
-            if (this._bot != null)
+            this._bot.ResetDestination();
+        }
+
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+            if (this._elapsedTime >= 0.25f)
             {
-                this._bot.GetComponent<NavMeshAgent>().ResetPath();
+                this._stateMachine.ChangeState<FindBrickState>();
+                return;
             }
         }
     }

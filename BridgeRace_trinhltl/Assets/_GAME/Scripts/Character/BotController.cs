@@ -20,11 +20,9 @@ namespace _GAME.Scripts.Character
 
             navMeshAgent = GetComponent<NavMeshAgent>();
 
-            this.navMeshAgent.angularSpeed = this.rotationSpeed * 10f;
-
             if (this._stateMachine != null)
             {
-                this._stateMachine.ChangeState<BotMoveState>();
+                this._stateMachine.ChangeState<FindBrickState>();
             }
             else
             {
@@ -37,16 +35,40 @@ namespace _GAME.Scripts.Character
             if (this._stateMachine != null)
             {
                 this._stateMachine.AddState(new BotIdleState(this._stateMachine, character: this));
-                this._stateMachine.AddState(new BotMoveState(this._stateMachine, character: this));
+                this._stateMachine.AddState(new FindBrickState(this._stateMachine, character: this));
+                this._stateMachine.AddState(new FindGateState(this._stateMachine, character: this));
+            }
+        }
+
+        public void StopAgent(bool stop)
+        {
+            if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+            {
+                this.navMeshAgent.isStopped = stop;
+                this.navMeshAgent.updatePosition = !stop;
+                this.navMeshAgent.updateRotation = !stop;
             }
         }
 
         public void SetDestination(Vector3 destination)
         {
-            if(!this.CanMove()) return;
             if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
             {
+                StopAgent(false);
                 this.navMeshAgent.SetDestination(destination);
+            }
+        }
+
+        public void ResetDestination()
+        {
+            if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+            {
+                this.navMeshAgent.enabled = false;
+                if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+                {
+                    this.navMeshAgent.ResetPath();
+                }
+                this.navMeshAgent.enabled = true;
             }
         }
 
@@ -57,6 +79,37 @@ namespace _GAME.Scripts.Character
                 return !this.navMeshAgent.pathPending
                     && this.navMeshAgent.remainingDistance
                     <= this._minDistanceToTarget;
+            }
+            return false;
+        }
+
+        public bool IsMoving()
+        {
+            if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+            {
+                if(this.navMeshAgent.pathPending)
+                {
+                    return true;
+                }
+
+                if (!this.navMeshAgent.hasPath)
+                {
+                    return false;
+                }
+
+                if (this.navMeshAgent.isStopped)
+                {
+                    return false;
+                }
+                if (this.navMeshAgent.remainingDistance <= this.navMeshAgent.stoppingDistance)
+                {
+                    return false;
+                }
+                if(this.navMeshAgent.velocity.magnitude < 0.1f)
+                {
+                    return false;
+                }
+
             }
             return false;
         }
@@ -74,12 +127,11 @@ namespace _GAME.Scripts.Character
                 currentTargetGateIndex = -1;
             }
 
-            var moveState = this._stateMachine.GetState<BotMoveState>();
-            if (moveState != null)
+            var findGateState = this._stateMachine.GetState<FindGateState>();
+            if (findGateState != null)
             {
-                moveState.RecalculateTarget();
+                findGateState.RecalculateTarget();
             }
-
         }
     }
 }

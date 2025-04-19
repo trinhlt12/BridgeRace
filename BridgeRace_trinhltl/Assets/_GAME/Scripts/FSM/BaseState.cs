@@ -73,7 +73,7 @@ namespace _GAME.Scripts.FSM
             // Bot animations
             if (stateType == typeof(BotIdleState))
                 return "Idle";
-            if (stateType == typeof(BotMoveState))
+            if (stateType == typeof(FindGateState) || stateType == typeof(FindBrickState))
                 return "Move";
 
             Debug.LogWarning($"No animation mapping found for state {stateType.Name}, using state name as fallback.");
