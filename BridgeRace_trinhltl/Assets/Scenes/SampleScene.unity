@@ -1514,6 +1514,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b9e0926731472e8cce13b49a0d5719, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!143 &1380029937 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 6478259952571263436, guid: 234ee45778616a34e8137ed514bfab9e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4168440377674217810}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1494200942 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6168093978756917509, guid: 7d2e8bf30f9a9eb44872687df4935b4a,
@@ -2184,6 +2190,11 @@ PrefabInstance:
       propertyPath: joystick
       value: 
       objectReference: {fileID: 1812651339}
+    - target: {fileID: 4703940741214114050, guid: 234ee45778616a34e8137ed514bfab9e,
+        type: 3}
+      propertyPath: characterController
+      value: 
+      objectReference: {fileID: 1380029937}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
