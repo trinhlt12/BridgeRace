@@ -63,7 +63,12 @@ namespace _GAME.Scripts.Character
         {
             if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
             {
-                this.navMeshAgent.ResetPath();
+                this.navMeshAgent.enabled = false;
+                if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+                {
+                    this.navMeshAgent.ResetPath();
+                }
+                this.navMeshAgent.enabled = true;
             }
         }
 

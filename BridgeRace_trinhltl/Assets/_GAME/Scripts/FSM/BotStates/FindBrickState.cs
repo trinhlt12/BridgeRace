@@ -12,6 +12,7 @@ namespace _GAME.Scripts.FSM.BotStates
         public override void OnEnter()
         {
             base.OnEnter();
+            this._bot.ResetDestination();
             BrickSpawner.Instance.OnBricksSpawned += HandleBricksSpawned;
 
         }
