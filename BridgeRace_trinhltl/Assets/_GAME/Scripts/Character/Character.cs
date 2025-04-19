@@ -51,7 +51,7 @@ namespace _GAME.Scripts.Character
 
         private void Update()
         {
-            /*CheckBridge();*/
+            CheckBridge();
         }
 
         /*private void OnTriggerEnter(Collider other)
@@ -96,18 +96,6 @@ namespace _GAME.Scripts.Character
                 this.IsOnBridge         = false;
                 this._currentBridgeStep = null;
             }
-        }
-
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawRay(this.transform.position + Vector3.up * 1f, Vector3.down);
-            if (this.currentBridge != null)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawLine(this.transform.position, this.currentBridge.transform.position);
-            }
-
         }
 
         public bool IsOnSameColorStep()
