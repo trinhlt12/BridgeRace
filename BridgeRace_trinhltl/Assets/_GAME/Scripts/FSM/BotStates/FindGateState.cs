@@ -20,7 +20,7 @@ namespace _GAME.Scripts.FSM.BotStates
             if ( _bot.currentTargetGateIndex >= 0)
             {
                 var destination = _currentFloorGate[_bot.currentTargetGateIndex].transform.position;
-                if(this._bot.IsOnBridge && !_bot.CanMove()) return;
+                if(!_bot.CanMove()) return;
                 _bot.SetDestination(destination);
                 return;
             }
