@@ -12,7 +12,8 @@ namespace _GAME.Scripts.Character
     {
         [SerializeField] protected StateMachine _stateMachine;
         [SerializeField] private   Transform    BrickHolder;
-        [SerializeField] private LayerMask _brickLayer;
+        [SerializeField] private   LayerMask    _brickLayer;
+        [SerializeField] private   Transform    _hitStart;
 
         public BrickColor characterColor;
 
@@ -50,7 +51,7 @@ namespace _GAME.Scripts.Character
 
         private void Update()
         {
-            CheckBridge();
+            /*CheckBridge();*/
         }
 
         /*private void OnTriggerEnter(Collider other)
@@ -77,9 +78,9 @@ namespace _GAME.Scripts.Character
 
         private void CheckBridge()
         {
-            var rayStart        = this.transform.position + Vector3.up * 0.5f;
-            var rayDirection    = Vector3.down;
-            var rayLength       = 1f;
+            var rayStart     = this._hitStart.position + Vector3.up * 0.5f;
+            var rayDirection = Vector3.down;
+            var rayLength    = 1f;
 
             if (Physics.Raycast(rayStart, rayDirection, out var hit, rayLength, this._brickLayer))
             {
@@ -87,6 +88,7 @@ namespace _GAME.Scripts.Character
                 this.IsOnBridge            = true;
                 this._currentBridgeStep    = hit.collider.gameObject.GetComponentInChildren<BridgeStep>();
                 this._currentBridgeForward = hit.transform.forward;
+                Debug.LogWarning($"Hit: {hit.collider.gameObject.name}");
             }
             else
             {
@@ -94,6 +96,18 @@ namespace _GAME.Scripts.Character
                 this.IsOnBridge         = false;
                 this._currentBridgeStep = null;
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawRay(this.transform.position + Vector3.up * 1f, Vector3.down);
+            if (this.currentBridge != null)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(this.transform.position, this.currentBridge.transform.position);
+            }
+
         }
 
         public bool IsOnSameColorStep()
