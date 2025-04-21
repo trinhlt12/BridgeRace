@@ -13,6 +13,7 @@ namespace _GAME.Scripts.Character
         public                  NavMeshAgent navMeshAgent;
         [SerializeField] public float        _minDistanceToTarget   = 0.5f;
         public                  int          currentTargetGateIndex = -1;
+        public bool IgnoreCondition = false;
 
         protected override void OnInit()
         {

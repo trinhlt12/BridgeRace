@@ -25,6 +25,11 @@ namespace _GAME.Scripts.FSM.BotStates
 
         }
 
+        public override void OnUpdate()
+        {
+            base.OnUpdate();
+        }
+
         public void RecalculateTarget()
         {
             this._targetBrick                = null;

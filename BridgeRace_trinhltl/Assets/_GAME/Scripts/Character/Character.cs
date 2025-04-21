@@ -169,6 +169,11 @@ namespace _GAME.Scripts.Character
                 return true;
             }
 
+            if (this is BotController bot && bot.IgnoreCondition)
+            {
+                return true;
+            }
+
             if (this._currentBridgeStep == null) return true;
 
             var isColorMatch = _currentBridgeStep.IsColorMatch(this.characterColor);
