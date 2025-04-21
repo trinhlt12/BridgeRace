@@ -56,7 +56,6 @@ namespace _GAME.Scripts.Character
 
         public bool IsMovingDownTheBridge()
         {
-            if (!IsOnBridge) return true;
             var inputDirection = this.GetMoveDirection();
             if (inputDirection.magnitude < 0.1f) return false;
 
