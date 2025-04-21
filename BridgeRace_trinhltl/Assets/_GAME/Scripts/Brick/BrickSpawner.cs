@@ -277,15 +277,19 @@ namespace _GAME.Scripts.FSM.Brick
         {
             if (floor == null) return;
 
+            Debug.Log($"Removing bricks of color {color} from floor {floor.name}");
+
             if (_floorBricks.TryGetValue(floor, out var colorBricks) &&
                 colorBricks.TryGetValue(color, out var bricks))
             {
                 var bricksCopy = new List<Brick>(bricks);
+                Debug.Log($"Found {bricksCopy.Count} bricks to remove");
 
                 foreach (var brick in bricksCopy)
                 {
                     if (brick != null)
                     {
+                        Debug.Log($"Removing brick {brick.gameObject.name}");
                         _activeBricks[color].Remove(brick);
 
                         if (_brickToSpawnPointIndex.ContainsKey(brick))
@@ -298,11 +302,16 @@ namespace _GAME.Scripts.FSM.Brick
                             _brickToSpawnPointIndex.Remove(brick);
                         }
 
+                        brick.gameObject.SetActive(false); //fall back
                         brick.ReturnToPool();
                     }
                 }
 
                 bricks.Clear();
+            }
+            else
+            {
+                Debug.LogWarning($"No bricks found for color {color} on floor {floor.name}");
             }
         }
 
