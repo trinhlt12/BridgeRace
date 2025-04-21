@@ -53,32 +53,40 @@ namespace _GAME.Scripts.FSM.BotStates
 
         private void FindAndSetTarget()
         {
-            if (_currentFloor == null || _currentFloorGate == null || _currentFloorGate.Count == 0)
+            var currentFloor = FloorManager.Instance.GetCurrentFloorForCharacter(this._bot);
+            if (currentFloor == null) return;
+
+            if (_bot.currentTargetGateIndex >= 0 && _bot.currentTargetFloor != null &&
+                GateTargetManager.Instance.IsGateReservedForBot(_bot.currentTargetFloor, _bot.currentTargetGateIndex, _bot))
             {
                 return;
             }
 
-            if (_bot.currentTargetGateIndex >= 0 && GateTargetManager.Instance.IsGateReservedForBot(this._bot.currentTargetFloor,_bot.currentTargetGateIndex, _bot))
+            if (_bot.currentTargetGateIndex >= 0 && _bot.currentTargetFloor != null)
             {
-                return;
+                GateTargetManager.Instance.ReleaseGate(_bot.currentTargetFloor, _bot.currentTargetGateIndex, _bot);
             }
 
-            if (_bot.currentTargetGateIndex >= 0)
+            var newTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, currentFloor);
+
+            if (newTargetGateIndex >= 0)
             {
-                GateTargetManager.Instance.ReleaseGate(this._bot.currentTargetFloor, _bot.currentTargetGateIndex, _bot);
+                if (GateTargetManager.Instance.ReserveGate(currentFloor, newTargetGateIndex, _bot))
+                {
+                    _bot.currentTargetFloor     = currentFloor;
+                    _bot.currentTargetGateIndex = newTargetGateIndex;
+
+                    if (currentFloor.floorGate != null && newTargetGateIndex < currentFloor.floorGate.Count)
+                    {
+                        _targetPosition = currentFloor.floorGate[newTargetGateIndex].transform.position;
+                        _bot.SetDestination(_targetPosition);
+                    }
+                }
             }
-
-            var newTargetGateIndex = GateTargetManager.Instance.NearestAvailableGate(this._bot, _currentFloor);
-
-            if (newTargetGateIndex >= 0 && !GateTargetManager.Instance.IsGateReservedForBot(this._bot.currentTargetFloor, newTargetGateIndex, _bot))
+            else
             {
-                GateTargetManager.Instance.ReserveGate(_currentFloor, newTargetGateIndex, _bot);
-                this._bot.currentTargetGateIndex = newTargetGateIndex;
-                this._targetPosition = _currentFloorGate[newTargetGateIndex].transform.position;
-                this._bot.SetDestination(this._targetPosition);
-            }else
-            {
-                this._bot.currentTargetGateIndex = -1;
+                _bot.currentTargetGateIndex = -1;
+                _bot.currentTargetFloor     = null;
             }
         }
     }
