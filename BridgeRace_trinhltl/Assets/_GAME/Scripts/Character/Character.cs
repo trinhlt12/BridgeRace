@@ -29,7 +29,6 @@ namespace _GAME.Scripts.Character
         public bool IsOnBridge { get => _isOnBridge; set => _isOnBridge = value; } //is the character on the bridge
 
         public Bridge currentBridge;
-        //brick count
 
         protected virtual void Awake()
         {

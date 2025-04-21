@@ -17,6 +17,8 @@ namespace _GAME.Scripts.Floor
         private Floor                        currentFloor;
         private Dictionary<Character, Floor> characterFloorMap = new Dictionary<Character, Floor>();
         public  List<BotController>          allBots;
+        public int totalFloors => this.floors.Count;
+        public int highestFloorIndex => this.floors.Count - 1;
 
         private void Awake()
         {
@@ -84,11 +86,16 @@ namespace _GAME.Scripts.Floor
 
         public Floor GetCurrentFloorForCharacter(Character character)
         {
+            return this.characterFloorMap.GetValueOrDefault(character);
+        }
+
+        public int GetCurrentFloorIndexForCharacter(Character character)
+        {
             if (characterFloorMap.TryGetValue(character, out var floor))
             {
-                return floor;
+                return this.floors.IndexOf(floor);
             }
-            return null;
+            return -1;
         }
 
         public int GetCurrentFloor()

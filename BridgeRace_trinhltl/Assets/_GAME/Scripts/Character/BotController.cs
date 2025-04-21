@@ -87,55 +87,15 @@ namespace _GAME.Scripts.Character
             return false;
         }
 
-        public bool IsMoving()
+        public bool IsLevelCompleted()
         {
-            if (this.navMeshAgent != null && this.navMeshAgent.isActiveAndEnabled)
+            var currentFloor = FloorManager.Instance.GetCurrentFloorIndexForCharacter(this);
+            if (currentFloor >= FloorManager.Instance.highestFloorIndex)
             {
-                if(this.navMeshAgent.pathPending)
-                {
-                    return true;
-                }
-
-                if (!this.navMeshAgent.hasPath)
-                {
-                    return false;
-                }
-
-                if (this.navMeshAgent.isStopped)
-                {
-                    return false;
-                }
-                if (this.navMeshAgent.remainingDistance <= this.navMeshAgent.stoppingDistance)
-                {
-                    return false;
-                }
-                if(this.navMeshAgent.velocity.magnitude < 0.1f)
-                {
-                    return false;
-                }
-
-            }
-            return false;
-        }
-
-        public int GetCurrentTargetGateIndex()
-        {
-            return this.currentTargetGateIndex;
-        }
-
-        public void TargetGateOccupied()
-        {
-            if (currentTargetGateIndex >= 0 && currentTargetFloor != null)
+                return true;
+            }else
             {
-                GateTargetManager.Instance.ReleaseGate(currentTargetFloor, currentTargetGateIndex, this);
-                currentTargetGateIndex = -1;
-                currentTargetFloor     = null;
-            }
-
-            var findGateState = this._stateMachine.GetState<FindGateState>();
-            if (findGateState != null)
-            {
-                findGateState.RecalculateTarget();
+                return false;
             }
         }
     }

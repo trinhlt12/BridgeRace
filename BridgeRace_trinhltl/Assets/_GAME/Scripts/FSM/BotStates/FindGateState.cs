@@ -54,6 +54,8 @@ namespace _GAME.Scripts.FSM.BotStates
         private void FindAndSetTarget()
         {
             var currentFloor = FloorManager.Instance.GetCurrentFloorForCharacter(this._bot);
+            Debug.Log($"Bot {_bot.name} is on floor: {currentFloor?.name}");
+
             if (currentFloor == null) return;
 
             if (_bot.currentTargetGateIndex >= 0 && _bot.currentTargetFloor != null &&
