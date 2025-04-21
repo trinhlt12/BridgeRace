@@ -52,9 +52,8 @@ namespace _GAME.Scripts.Character
         {
             if (other.gameObject.CompareTag("Bridge"))
             {
-                this.currentBridge = other.gameObject.GetComponent<Bridge>();
                 this.IsOnBridge = true;
-                this._currentBridgeStep = other.gameObject.GetComponentInChildren<BridgeStep>();
+                this._currentBridgeStep = other.gameObject.GetComponent<BridgeStep>();
                 this._currentBridgeForward = other.gameObject.transform.forward;
 
             }
@@ -64,19 +63,9 @@ namespace _GAME.Scripts.Character
         {
             if (other.gameObject.CompareTag("Bridge"))
             {
-                this.currentBridge = null;
                 this.IsOnBridge = false;
                 _currentBridgeStep = null;
             }
-        }
-
-        public bool IsOnSameColorStep()
-        {
-            if (this._currentBridgeStep == null || !IsOnBridge)
-            {
-                return true;
-            }
-            return this._currentBridgeStep.IsColorMatch(this.characterColor);
         }
 
 
