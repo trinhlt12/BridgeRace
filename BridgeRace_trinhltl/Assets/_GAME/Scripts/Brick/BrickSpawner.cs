@@ -284,10 +284,25 @@ namespace _GAME.Scripts.FSM.Brick
 
                 foreach (var brick in bricksCopy)
                 {
-                    RemoveBrick(brick);
+                    if (brick != null)
+                    {
+                        _activeBricks[color].Remove(brick);
+
+                        if (_brickToSpawnPointIndex.ContainsKey(brick))
+                        {
+                            int spawnPointIndex = _brickToSpawnPointIndex[brick];
+                            if (floor.GetSpawnPointGenerator() != null)
+                            {
+                                floor.GetSpawnPointGenerator().SetSpawnPointAvailability(spawnPointIndex, true);
+                            }
+                            _brickToSpawnPointIndex.Remove(brick);
+                        }
+
+                        brick.ReturnToPool();
+                    }
                 }
 
-                colorBricks.Remove(color);
+                bricks.Clear();
             }
         }
 

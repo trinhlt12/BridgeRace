@@ -23,10 +23,6 @@ namespace _GAME.Scripts.Floor
             {
                 SpawnBricksForCharactersOnFloor();
             }
-
-            /*
-            BrickSpawner.Instance.ActivateAllBricks(activate);
-        */
         }
 
         public SpawnPointGenerator GetSpawnPointGenerator()
