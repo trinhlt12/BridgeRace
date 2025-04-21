@@ -32,10 +32,16 @@ namespace _GAME.Scripts.FSM.BotStates
 
             if ( _bot.currentTargetGateIndex >= 0)
             {
-                var destination = _currentFloorGate[_bot.currentTargetGateIndex].transform.position;
+                var gate = _currentFloorGate[_bot.currentTargetGateIndex].transform.position;
                 var gateForward = _currentFloorGate[_bot.currentTargetGateIndex].transform.forward;
-                var offset      = destination + gateForward * 0.5f;
-                _bot.SetDestination(offset);
+                var destination      = gate + gateForward * 0.5f;
+                _bot.SetDestination(destination);
+            }
+
+            if (this._bot.HasReachedDestination())
+            {
+                this._stateMachine.ChangeState<FindBrickState>();
+                return;
             }
         }
 

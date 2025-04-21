@@ -9,9 +9,16 @@ namespace _GAME.Scripts.FSM
         private IState                          _previousState;
         private Dictionary<System.Type, IState> _states = new Dictionary<System.Type, IState>();
 
+        [SerializeField][Tooltip("Current state name (for debugging)")]
+        private string currentStateName;
         private void Update()
         {
             _currentState?.OnUpdate();
+
+            if (_currentState != null)
+            {
+                currentStateName = _currentState.GetType().Name;
+            }
         }
 
         private void FixedUpdate()
