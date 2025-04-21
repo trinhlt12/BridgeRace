@@ -26,6 +26,9 @@ namespace _GAME.Scripts.FSM.Brick
 
         public SpawnPointGenerator _currentSpawnPointGenerator;
 
+        private Dictionary<Floor, Dictionary<BrickColor, List<Brick>>> _floorBricks =
+            new Dictionary<Floor, Dictionary<BrickColor, List<Brick>>>();
+
         private void Awake()
         {
             if (Instance == null)
@@ -66,10 +69,19 @@ namespace _GAME.Scripts.FSM.Brick
 
         public void SetCurrentFloor(Floor floor)
         {
-            _currentFloor = floor;
-
+            _currentFloor               = floor;
             _currentSpawnPointGenerator = floor.GetSpawnPointGenerator();
-            if (this._currentSpawnPointGenerator == null)
+
+            if (!_floorBricks.ContainsKey(floor))
+            {
+                _floorBricks[floor] = new Dictionary<BrickColor, List<Brick>>();
+                foreach (BrickColor color in Enum.GetValues(typeof(BrickColor)))
+                {
+                    _floorBricks[floor][color] = new List<Brick>();
+                }
+            }
+
+            if (_currentSpawnPointGenerator == null)
             {
                 Debug.LogError("No spawnpoint generator found");
             }
@@ -184,6 +196,18 @@ namespace _GAME.Scripts.FSM.Brick
 
                     _activeBricks[color].Add(brick);
 
+                    if (!_floorBricks.ContainsKey(_currentFloor))
+                    {
+                        _floorBricks[_currentFloor] = new Dictionary<BrickColor, List<Brick>>();
+                    }
+
+                    if (!_floorBricks[_currentFloor].ContainsKey(color))
+                    {
+                        _floorBricks[_currentFloor][color] = new List<Brick>();
+                    }
+
+                    _floorBricks[_currentFloor][color].Add(brick);
+
                     this._brickToSpawnPointIndex[brick] = spawnPointIndex;
                     this._currentSpawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, false);
                     OnBricksSpawned?.Invoke(color, _activeBricks[color].Count);
@@ -228,14 +252,43 @@ namespace _GAME.Scripts.FSM.Brick
                 _activeBricks[brick.Color].Remove(brick);
             }
 
+            foreach (var floorEntry in _floorBricks)
+            {
+                if (floorEntry.Value.TryGetValue(brick.Color, out var bricks))
+                {
+                    bricks.Remove(brick);
+                }
+            }
+
             if (_brickToSpawnPointIndex.ContainsKey(brick))
             {
                 int spawnPointIndex = _brickToSpawnPointIndex[brick];
-                this._currentSpawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
+                if (_currentSpawnPointGenerator != null)
+                {
+                    _currentSpawnPointGenerator.SetSpawnPointAvailability(spawnPointIndex, true);
+                }
                 _brickToSpawnPointIndex.Remove(brick);
             }
 
             brick.ReturnToPool();
+        }
+
+        public void RemoveBricksByColor(Floor floor, BrickColor color)
+        {
+            if (floor == null) return;
+
+            if (_floorBricks.TryGetValue(floor, out var colorBricks) &&
+                colorBricks.TryGetValue(color, out var bricks))
+            {
+                var bricksCopy = new List<Brick>(bricks);
+
+                foreach (var brick in bricksCopy)
+                {
+                    RemoveBrick(brick);
+                }
+
+                colorBricks.Remove(color);
+            }
         }
 
         public void RespawnBrick(Brick brick)

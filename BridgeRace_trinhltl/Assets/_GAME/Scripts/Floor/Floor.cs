@@ -24,7 +24,9 @@ namespace _GAME.Scripts.Floor
                 SpawnBricksForCharactersOnFloor();
             }
 
+            /*
             BrickSpawner.Instance.ActivateAllBricks(activate);
+        */
         }
 
         public SpawnPointGenerator GetSpawnPointGenerator()
@@ -68,6 +70,11 @@ namespace _GAME.Scripts.Floor
             {
                 charactersOnFloor.Remove(character);
 
+                if (this._isActive && BrickSpawner.Instance != null && character.characterColor != BrickColor.Grey)
+                {
+                    BrickSpawner.Instance.RemoveBricksByColor(this, character.characterColor);
+                }
+
                 if (this._isActive)
                 {
                     this.SpawnBricksForCharactersOnFloor();
@@ -76,7 +83,7 @@ namespace _GAME.Scripts.Floor
 
             if (charactersOnFloor.Count == 0 && !FloorManager.Instance.IsCurrentFloor(this))
             {
-                Activate(false);
+                this._isActive = false;
             }
         }
 
