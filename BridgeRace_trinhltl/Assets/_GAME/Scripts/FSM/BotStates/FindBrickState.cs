@@ -1,6 +1,7 @@
 namespace _GAME.Scripts.FSM.BotStates
 {
     using _GAME.Scripts.Character;
+    using _GAME.Scripts.Floor;
     using _GAME.Scripts.FSM.Brick;
     using UnityEngine;
 
