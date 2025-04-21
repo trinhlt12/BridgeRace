@@ -38,8 +38,9 @@ namespace _GAME.Scripts.FSM.BotStates
 
         private Brick FindNearestBrick()
         {
-            Brick nearestBrick = null;
-            var   minDistance  = float.MaxValue;
+            Brick nearestBrick        = null;
+            var   minDistance         = float.MaxValue;
+            var   maxDistanceThresold = 15f;
 
             if (BrickSpawner.Instance != null && BrickSpawner.Instance._activeBricks.TryGetValue(this._bot.characterColor, out var bricks))
             {
@@ -48,7 +49,7 @@ namespace _GAME.Scripts.FSM.BotStates
                     if (brick != null && brick.gameObject.activeInHierarchy)
                     {
                         var distance = Vector3.Distance(this._bot.transform.position, brick.transform.position);
-                        if (distance < minDistance)
+                        if (distance < minDistance && distance < maxDistanceThresold)
                         {
                             minDistance  = distance;
                             nearestBrick = brick;

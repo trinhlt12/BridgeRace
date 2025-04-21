@@ -79,7 +79,7 @@ namespace _GAME.Scripts.Character
             {
                 return !this.navMeshAgent.pathPending
                     && this.navMeshAgent.remainingDistance
-                    <= this._minDistanceToTarget;
+                    <= this.navMeshAgent.stoppingDistance;
             }
             return false;
         }
