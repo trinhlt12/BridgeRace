@@ -28,6 +28,11 @@ namespace _GAME.Scripts.FSM.BotStates
         public override void OnUpdate()
         {
             base.OnUpdate();
+            if (this._bot.IsLevelCompleted())
+            {
+                //TODO : Change state to WinState
+                return;
+            }
         }
 
         public void RecalculateTarget()
