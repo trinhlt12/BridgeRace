@@ -48,8 +48,17 @@ namespace _GAME.Scripts.Floor
                 charactersOnFloor.Add(character);
                 if (this._isActive)
                 {
-                    this.SpawnBricksForCharactersOnFloor();
+                    SpawnBricksForCharacter(character);
                 }
+            }
+        }
+
+        private void SpawnBricksForCharacter(Character character)
+        {
+            if (BrickSpawner.Instance != null && this._isActive && character.characterColor != BrickColor.Grey)
+            {
+                BrickSpawner.Instance.SetCurrentFloor(this);
+                BrickSpawner.Instance.SpawnBricksForCharacter(character);
             }
         }
 

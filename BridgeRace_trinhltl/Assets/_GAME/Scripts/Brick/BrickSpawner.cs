@@ -77,8 +77,6 @@ namespace _GAME.Scripts.FSM.Brick
 
         public void SpawnBricksForCharacters(List<Character> characters)
         {
-            ClearAllBricks();
-
             var colorsToSpawn = new HashSet<BrickColor>();
             foreach (var character in characters)
             {
@@ -100,6 +98,15 @@ namespace _GAME.Scripts.FSM.Brick
             {
                 SpawnBricksOfColorAtPoints(colorEntry.Key, colorEntry.Value);
             }
+        }
+
+        public void SpawnBricksForCharacter(Character character)
+        {
+            if (character.characterColor == BrickColor.Grey)
+                return;
+
+            var singleCharList = new List<Character> { character };
+            SpawnBricksForCharacters(singleCharList);
         }
 
         private Dictionary<BrickColor, List<Vector3>> AllocateSpawnPointsForColors(HashSet<BrickColor> colors)
