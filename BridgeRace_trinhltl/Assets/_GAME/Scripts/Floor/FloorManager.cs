@@ -82,6 +82,15 @@ namespace _GAME.Scripts.Floor
 
         }
 
+        public Floor GetCurrentFloorForCharacter(Character character)
+        {
+            if (characterFloorMap.TryGetValue(character, out var floor))
+            {
+                return floor;
+            }
+            return null;
+        }
+
         public int GetCurrentFloor()
         {
             return this.floors.IndexOf(this.currentFloor) + 1;

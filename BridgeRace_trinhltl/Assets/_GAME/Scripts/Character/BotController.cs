@@ -1,6 +1,7 @@
 namespace _GAME.Scripts.Character
 {
     using System.Collections;
+    using _GAME.Scripts.Floor;
     using _GAME.Scripts.FSM.BotStates;
     using _GAME.Scripts.FSM.Brick;
     using _GAME.Scripts.FSM.Bridge;
@@ -12,8 +13,10 @@ namespace _GAME.Scripts.Character
     {
         public                  NavMeshAgent navMeshAgent;
         [SerializeField] public float        _minDistanceToTarget   = 0.5f;
+        public                  bool         IgnoreCondition        = false;
+
+        public                  Floor        currentTargetFloor;
         public                  int          currentTargetGateIndex = -1;
-        public bool IgnoreCondition = false;
 
         protected override void OnInit()
         {
@@ -122,10 +125,11 @@ namespace _GAME.Scripts.Character
 
         public void TargetGateOccupied()
         {
-            if (currentTargetGateIndex >= 0)
+            if (currentTargetGateIndex >= 0 && currentTargetFloor != null)
             {
-                GateTargetManager.Instance.ReleaseGate(currentTargetGateIndex, this);
+                GateTargetManager.Instance.ReleaseGate(currentTargetFloor, currentTargetGateIndex, this);
                 currentTargetGateIndex = -1;
+                currentTargetFloor     = null;
             }
 
             var findGateState = this._stateMachine.GetState<FindGateState>();
