@@ -13,6 +13,16 @@ namespace _GAME.Scripts.Floor
         {
             if (other.CompareTag("Player") || other.CompareTag("Bot"))
             {
+                if (other.CompareTag("Bot"))
+                {
+                    var bot = other.GetComponent<BotController>();
+                    if (bot != null)
+                    {
+                        bot.currentTargetGateIndex = -1;
+                        bot.currentTargetFloor     = null;
+                    }
+                }
+
                 var character = other.GetComponent<Character>();
                 if (character != null)
                 {
