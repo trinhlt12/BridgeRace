@@ -8,6 +8,7 @@ namespace _GAME.Scripts.Level
 
     public enum GameState
     {
+        Initializing,
         Playing,
         Win,
         Lose,
@@ -18,9 +19,11 @@ namespace _GAME.Scripts.Level
     {
         public static GameManager Instance { get; private set; }
 
-        public                   List<Character> winners    = new List<Character>();
-        [SerializeField] private int             maxWinners = 2;
-        public                   GameState       CurrentState { get; private set; } = GameState.Playing;
+        public List<Character> winners = new List<Character>();
+        [SerializeField] private int maxWinners = 2;
+        public GameState CurrentState { get; private set; } = GameState.Initializing;
+
+        [SerializeField] private int startingLevel = 0;
 
         public event Action<GameState> OnGameStateChanged;
 
@@ -36,42 +39,66 @@ namespace _GAME.Scripts.Level
                 Destroy(gameObject);
                 return;
             }
-
-            OnInit();
-        }
-
-        private static void OnInit()
-        {
-            /*var lastLevel = PlayerPrefs.GetInt("LastCompletedLevel", -1);
-            if (lastLevel == -1)
-            {
-                //
-            }
-            else
-            {
-                LevelManager.Instance.LoadLevel(lastLevel + 1);
-            }*/
-
-            LevelManager.Instance.LoadLevel(0);
-
         }
 
         private void Start()
         {
+            // Initialize the game after all components have started
+            InitializeGame();
+        }
+
+        private void InitializeGame()
+        {
+            Debug.Log("GameManager: Initializing game...");
+
+            // Load the saved level or start from the first level
+            int levelToLoad = startingLevel;
+
+            int lastLevel = PlayerPrefs.GetInt("LastCompletedLevel", -1);
+            if (lastLevel >= 0)
+            {
+                levelToLoad = lastLevel + 1;
+                Debug.Log($"GameManager: Loading level {levelToLoad} based on player progress");
+            }
+
+            // Make sure LevelManager is ready
+            if (LevelManager.Instance == null)
+            {
+                Debug.LogError("GameManager: LevelManager instance is null!");
+                return;
+            }
+
+            // Subscribe to level events
+            LevelManager.Instance.OnLevelLoaded += OnLevelLoaded;
+
+            // Load the level
+            Debug.Log($"GameManager: Requesting to load level {levelToLoad}");
+            LevelManager.Instance.LoadLevel(levelToLoad);
+        }
+
+        private void OnLevelLoaded(int levelIndex)
+        {
+            Debug.Log($"GameManager: Level {levelIndex} loaded successfully, starting gameplay");
             ChangeState(GameState.Playing);
         }
 
         private void ChangeState(GameState newState)
         {
-            if ((CurrentState == GameState.Lose || CurrentState == GameState.Win))
+            if ((CurrentState == GameState.Lose || CurrentState == GameState.Win) &&
+                (newState != GameState.Initializing))
             {
                 return;
             }
 
+            Debug.Log($"GameManager: State changing from {CurrentState} to {newState}");
             CurrentState = newState;
 
             switch (newState)
             {
+                case GameState.Initializing:
+                    // Reset state for a new level
+                    winners.Clear();
+                    break;
                 case GameState.Playing:
                     StartGamePlay();
                     break;
@@ -91,28 +118,37 @@ namespace _GAME.Scripts.Level
 
         private void HandleLose()
         {
+            Debug.Log("GameManager: Player lost the game");
             //TODO : Handle Lose UI
         }
 
         private void HandleWin()
         {
-            //TODO : Change to next level
+            Debug.Log("GameManager: Player won the game");
+            // Save progress
+            PlayerPrefs.SetInt("LastCompletedLevel", LevelManager.Instance.CurrentLevelIndex);
+            PlayerPrefs.Save();
+
+            //TODO : Show win UI and option to go to next level
         }
 
         private void StartGamePlay()
         {
+            Debug.Log("GameManager: Starting gameplay");
+            // Enable player controls, etc.
         }
 
         private void PauseGame()
         {
-
+            Debug.Log("GameManager: Game paused");
+            // Show pause UI, etc.
         }
 
         public void CharacterReachedFinish(Character character)
         {
-            if(CurrentState != GameState.Playing) return;
+            if (CurrentState != GameState.Playing) return;
 
-            if(this.winners.Contains(character)) return;
+            if (this.winners.Contains(character)) return;
 
             if (this.winners.Count >= this.maxWinners)
             {
@@ -122,16 +158,37 @@ namespace _GAME.Scripts.Level
             this.winners.Add(character);
 
             var rank = this.winners.Count;
-            Debug.Log($"Character {character.name} reached the finish line and is ranked {rank}");
+            Debug.Log($"GameManager: Character {character.name} reached the finish line and is ranked {rank}");
 
             if (character.CompareTag("Player"))
             {
                 ChangeState(GameState.Win);
-                Debug.Log($"Player {character.name} won the game!");
+                Debug.Log($"GameManager: Player {character.name} won the game!");
 
-            }else if(this.winners.Count >= this.maxWinners && !this.winners.Any(w => w.CompareTag("Player")))
+            }
+            else if (this.winners.Count >= this.maxWinners && !this.winners.Any(w => w.CompareTag("Player")))
             {
                 ChangeState(GameState.Lose);
+            }
+        }
+
+        public void RestartLevel()
+        {
+            ChangeState(GameState.Initializing);
+            LevelManager.Instance.RestartLevel();
+        }
+
+        public void LoadNextLevel()
+        {
+            ChangeState(GameState.Initializing);
+            LevelManager.Instance.LoadNextLevel();
+        }
+
+        private void OnDestroy()
+        {
+            if (LevelManager.Instance != null)
+            {
+                LevelManager.Instance.OnLevelLoaded -= OnLevelLoaded;
             }
         }
     }

@@ -6,6 +6,8 @@ using Random = UnityEngine.Random;
 
 namespace _GAME.Scripts.FSM.Brick
 {
+    using _GAME.Scripts.Floor;
+
     public class SpawnPointGenerator : MonoBehaviour
     {
         [SerializeField] private GameObject spawnArea;

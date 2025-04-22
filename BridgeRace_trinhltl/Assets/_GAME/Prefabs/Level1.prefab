@@ -199,7 +199,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8520867942686046101}
-  - component: {fileID: 3151797725571493528}
+  - component: {fileID: 7084028635159130268}
   m_Layer: 0
   m_Name: Level1
   m_TagString: Untagged
@@ -227,7 +227,7 @@ Transform:
   - {fileID: 1060651260409238645}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3151797725571493528
+--- !u!114 &7084028635159130268
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -236,12 +236,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 9140056972362247270}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 289bbb27c00645848b329022a1e6e092, type: 3}
+  m_Script: {fileID: 11500000, guid: da5bdbe5bb974d278101d9aa94931118, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startPoints: []
-  _finishLine: {fileID: 0}
-  levelDataList: []
+  _levelFloors:
+  - {fileID: 1258824212198512808}
+  - {fileID: 3284179282893782107}
 --- !u!1001 &749340506673336904
 PrefabInstance:
   m_ObjectHideFlags: 0
