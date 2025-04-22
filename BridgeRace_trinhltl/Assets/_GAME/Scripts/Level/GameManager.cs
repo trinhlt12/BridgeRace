@@ -37,20 +37,23 @@ namespace _GAME.Scripts.Level
                 return;
             }
 
-            this.OnInit();
+            OnInit();
         }
 
-        private void OnInit()
+        private static void OnInit()
         {
-            var lastLevel = PlayerPrefs.GetInt("LastCompletedLevel", -1);
+            /*var lastLevel = PlayerPrefs.GetInt("LastCompletedLevel", -1);
             if (lastLevel == -1)
             {
-                LevelManager.Instance.LoadLevel(0);
+                //
             }
             else
             {
                 LevelManager.Instance.LoadLevel(lastLevel + 1);
-            }
+            }*/
+
+            LevelManager.Instance.LoadLevel(0);
+
         }
 
         private void Start()

@@ -75,6 +75,7 @@ namespace _GAME.Scripts.Level
             //load new level
             var levelData = this.levelDataList[levelIndex];
             this._currentLevelInstance = Instantiate(levelData.levelPrefab);
+            Debug.Log($"Level {levelIndex} loaded.");
             this._currentLevelIndex    = levelIndex;
 
             yield return new WaitForSeconds(0.5f);
