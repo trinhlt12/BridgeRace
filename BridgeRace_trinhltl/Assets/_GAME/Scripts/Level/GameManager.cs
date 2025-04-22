@@ -94,13 +94,20 @@ namespace _GAME.Scripts.Level
 
             if(this.winners.Contains(character)) return;
 
+            if (this.winners.Count >= this.maxWinners)
+            {
+                return;
+            }
+
             this.winners.Add(character);
+
             var rank = this.winners.Count;
             Debug.Log($"Character {character.name} reached the finish line and is ranked {rank}");
 
             if (character.CompareTag("Player"))
             {
                 ChangeState(GameState.Win);
+                Debug.Log($"Player {character.name} won the game!");
 
             }else if(this.winners.Count >= this.maxWinners && !this.winners.Any(w => w.CompareTag("Player")))
             {

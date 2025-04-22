@@ -4,9 +4,9 @@ namespace _GAME.Scripts.Level
     using UnityEngine;
 
     public class LevelManager : MonoBehaviour
-    {/*
+    {
         [SerializeField] private List<Transform> _startPoints;
+        [SerializeField] private Transform       _finishLine;
 
-        private int _startFloorIndex = 0;*/
     }
 }
