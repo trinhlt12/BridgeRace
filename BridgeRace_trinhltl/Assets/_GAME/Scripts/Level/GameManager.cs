@@ -36,6 +36,21 @@ namespace _GAME.Scripts.Level
                 Destroy(gameObject);
                 return;
             }
+
+            this.OnInit();
+        }
+
+        private void OnInit()
+        {
+            var lastLevel = PlayerPrefs.GetInt("LastCompletedLevel", -1);
+            if (lastLevel == -1)
+            {
+                LevelManager.Instance.LoadLevel(0);
+            }
+            else
+            {
+                LevelManager.Instance.LoadLevel(lastLevel + 1);
+            }
         }
 
         private void Start()
