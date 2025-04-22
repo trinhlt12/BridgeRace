@@ -73,10 +73,12 @@ namespace _GAME.Scripts.Level
 
         private void HandleLose()
         {
+            //TODO : Handle Lose UI
         }
 
         private void HandleWin()
         {
+            //TODO : Change to next level
         }
 
         private void StartGamePlay()
