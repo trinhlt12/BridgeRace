@@ -11,5 +11,6 @@ namespace _GAME.Scripts.Level
         public GameObject levelPrefab;
         public int numberOfOpponents;
         public BrickColor[] opponentColors;
+        public BrickColor playerColor;
     }
 }

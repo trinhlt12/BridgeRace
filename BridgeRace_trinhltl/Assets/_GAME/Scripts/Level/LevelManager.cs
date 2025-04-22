@@ -3,6 +3,7 @@ namespace _GAME.Scripts.Level
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using _GAME.Scripts.Floor;
     using _GAME.Scripts.FSM.Brick;
     using UnityEngine;
 
@@ -85,17 +86,57 @@ namespace _GAME.Scripts.Level
 
         private void SetupLevel(LevelData levelData)
         {
-            SpawnOpponents(levelData.opponentColors);
+            this.SetupOpponents(levelData.opponentColors);
 
             SetupPlayer();
         }
 
         private void SetupPlayer()
         {
+            var player = FloorManager.Instance.allCharacters.Find(c => c.CompareTag("Player"));
+            if (player == null)
+            {
+                Debug.LogError("Player character not found.");
+                return;
+            }
+
+            var playerStartPoint = _startPoints[0];
+            player.transform.position = playerStartPoint.position + Vector3.up * 0.5f;
+            player.transform.rotation = playerStartPoint.rotation;
+
+            var currentLevelData = this.levelDataList[this._currentLevelIndex];
+            player.SetCharacterColor(currentLevelData.playerColor);
         }
 
-        private void SpawnOpponents(BrickColor[] levelDataOpponentColors)
+        private void SetupOpponents(BrickColor[] levelDataOpponentColors)
         {
+            var bots = FloorManager.Instance.allBots;
+            if (bots == null || bots.Count == 0)
+            {
+                Debug.LogError("No opponent characters found.");
+                return;
+            }
+
+            var botStartPoints = _startPoints.GetRange(1, _startPoints.Count - 1);
+            for (int i = 0; i < bots.Count; i++)
+            {
+                if (i >= botStartPoints.Count)
+                {
+                    Debug.LogError("Not enough start points for all opponents.");
+                    break;
+                }
+
+                var bot = bots[i];
+                var startPoint = botStartPoints[i];
+
+                bot.transform.position = startPoint.position + Vector3.up * 0.5f;
+                bot.transform.rotation = startPoint.rotation;
+
+                if (i < levelDataOpponentColors.Length)
+                {
+                    bot.SetCharacterColor(levelDataOpponentColors[i]);
+                }
+            }
         }
     }
 }
