@@ -6,9 +6,6 @@ using UnityEngine;
 
 public class LevelFinishZone : MonoBehaviour
 {
-    public List<Character> winners = new List<Character>();
-
-    private int listMaxLength = 3;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -20,19 +17,7 @@ public class LevelFinishZone : MonoBehaviour
             }
 
             var character = other.GetComponent<Character>();
-            AddWinner(character);
         }
     }
 
-    private void AddWinner(Character character)
-    {
-        if (winners.Count < listMaxLength)
-        {
-            winners.Add(character);
-        }
-        else
-        {
-            Debug.Log("Winner list is full.");
-        }
-    }
 }
