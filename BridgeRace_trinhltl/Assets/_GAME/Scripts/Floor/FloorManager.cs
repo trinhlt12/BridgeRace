@@ -11,7 +11,7 @@ namespace _GAME.Scripts.Floor
     {
         public static FloorManager Instance { get; private set; }
 
-        [SerializeField] public  List<Floor>             floors        = new List<Floor>();
+        public  List<Floor>             floors        = new List<Floor>();
         public List<Character> allCharacters = new List<Character>();
 
         private Floor                        currentFloor;
@@ -32,27 +32,26 @@ namespace _GAME.Scripts.Floor
                 Destroy(gameObject);
                 return;
             }
+
+            this.OnInit();
         }
 
-        private void Start()
+        private void OnInit()
         {
-            InitializeFloors();
-            Debug.Log(this.currentFloor.gameObject.name);
-            Debug.Log("Numbers of chars on current floor:" + this.currentFloor.GetCharacterCount());
-            Debug.Log("Numbers of chars in total" + this.allCharacters.Count);
-            Debug.Log("Total floors: " + this.floors.Count);
-            //log number of characters in current floor:
-            Debug.Log($"Number of characters in current floor: {this.currentFloor.GetCharacterCount()}");
-        }
-
-        private void InitializeFloors()
-        {
-            if (this.floors.Count > 0)
+            var floors = FindObjectsOfType<Floor>();
+            foreach (var floor in floors)
             {
-                this.currentFloor = this.floors[0];
+                this.floors.Add(floor);
+            }
+        }
+        public void InitializeFloors(List<Floor> levelFloors)
+        {
+            if (levelFloors.Count > 0)
+            {
+                this.currentFloor = levelFloors[0];
                 foreach (var character in this.allCharacters)
                 {
-                    RegisterCharacterToFloor(character, this.floors[0]);
+                    RegisterCharacterToFloor(character, levelFloors[0]);
                 }
             }
         }
@@ -152,5 +151,25 @@ namespace _GAME.Scripts.Floor
             return -1;
         }
 
+        public void RegisterFloors(Floor[] newFloors)
+        {
+            floors.Clear();
+
+            foreach (Floor floor in newFloors)
+            {
+                if (floor != null && !floors.Contains(floor))
+                {
+                    floors.Add(floor);
+                    Debug.Log($"FloorManager: Registered floor {floor.name}");
+                }
+            }
+
+            if (floors.Count > 0)
+            {
+                currentFloor = floors[0];
+                currentFloor.Activate(true);
+                Debug.Log($"FloorManager: Set current floor to {currentFloor.name}");
+            }
+        }
     }
 }
