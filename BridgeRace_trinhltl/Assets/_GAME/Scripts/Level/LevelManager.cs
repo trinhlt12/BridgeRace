@@ -10,7 +10,7 @@ namespace _GAME.Scripts.Level
 
     public class LevelManager : MonoBehaviour
     {
-        [SerializeField] private List<Transform> _startPoints;
+        private List<Transform> _startPoints;
         [SerializeField] private Transform       _finishLine;
         [SerializeField] private List<LevelData> levelDataList;
 
@@ -117,6 +117,10 @@ namespace _GAME.Scripts.Level
                 Debug.Log($"Found and registered {floorsInLevel.Length} floors");
             }
 
+            var levelPrefab = _currentLevelInstance.GetComponent<LevelPrefab>();
+            var startPoints = levelPrefab._startPoints;
+            _startPoints = new List<Transform>(startPoints);
+
             // Debug information
             Debug.Log($"LevelManager: Level {levelIndex} prefab instantiated");
             Debug.Log($"LevelManager: Level position: {_currentLevelInstance.transform.position}");
@@ -131,7 +135,7 @@ namespace _GAME.Scripts.Level
 
             // Setup characters, player, and opponents
             Debug.Log("LevelManager: Setting up level components...");
-            /*SetupLevel(levelData);*/
+            SetupLevel(levelData);
 
             // Notify that level is loaded and ready
             Debug.Log($"LevelManager: Level {levelIndex} setup complete, notifying listeners");
@@ -185,7 +189,9 @@ namespace _GAME.Scripts.Level
             player.transform.rotation = playerStartPoint.rotation;
 
             // Set player color
+            /*
             player.SetCharacterColor(levelData.playerColor);
+            */
             Debug.Log($"LevelManager: Player set to position {player.transform.position} with color {levelData.playerColor}");
         }
 
@@ -247,16 +253,16 @@ namespace _GAME.Scripts.Level
                 bot.transform.position = startPoint.position + Vector3.up * 0.5f;
                 bot.transform.rotation = startPoint.rotation;
 
-                // Set color if available
+                /*// Set color if available
                 if (i < opponentColors.Length)
                 {
                     bot.SetCharacterColor(opponentColors[i]);
                     Debug.Log($"LevelManager: Bot {i} set to position {bot.transform.position} with color {opponentColors[i]}");
-                }
+                }*/
             }
         }
 
-        private List<BotController> FindBotCharacters()
+        private static List<BotController> FindBotCharacters()
         {
             if (FloorManager.Instance != null)
             {

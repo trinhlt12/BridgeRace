@@ -153,6 +153,8 @@ MonoBehaviour:
   currentBridge: {fileID: 0}
   navMeshAgent: {fileID: 7710758564102539090}
   _minDistanceToTarget: 0.5
+  IgnoreCondition: 0
+  currentTargetFloor: {fileID: 0}
   currentTargetGateIndex: -1
 --- !u!195 &7710758564102539090
 NavMeshAgent:

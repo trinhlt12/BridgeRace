@@ -130,6 +130,7 @@ namespace _GAME.Scripts.Level
             PlayerPrefs.Save();
 
             //TODO : Show win UI and option to go to next level
+            LevelManager.Instance.LoadNextLevel();
         }
 
         private void StartGamePlay()

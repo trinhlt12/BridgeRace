@@ -2,15 +2,12 @@ namespace _GAME.Scripts.Level
 {
     using System.Linq;
     using _GAME.Scripts.Floor;
+    using JetBrains.Annotations;
     using UnityEngine;
 
-    public class LevelPrefab : MonoBehaviour, ILevelData
+    public class LevelPrefab : MonoBehaviour
     {
-        [SerializeField] private Floor[] _levelFloors;
+        public Transform[] _startPoints;
 
-        public Floor[] GetFloors()
-        {
-            return _levelFloors.ToArray();
-        }
     }
 }
